@@ -37,14 +37,7 @@
 
 #include "chain_config.h"
 
-#ifdef HAVE_SWAP
-#include "swap.h"
-#endif
-
 tx_state_e g_tx_state = TX_STATE_IDLE;
-
-static const char *msg_error1 = "Expert Mode";
-static const char *msg_error2 = "Required";
 
 __Z_INLINE void handle_getversion(__Z_UNUSED volatile uint32_t *flags,
                                   volatile uint32_t *tx,
@@ -109,8 +102,7 @@ __Z_INLINE void extractHDPath(uint32_t rx, uint32_t offset) {
 
   // Check values
   if (hdPath[0] != HDPATH_0_DEFAULT ||
-      ((hdPath[1] != HDPATH_1_DEFAULT) &&
-       (hdPath[1] != HDPATH_ETH_1_DEFAULT)) ||
+      ((hdPath[1] != HDPATH_1_DEFAULT) && (hdPath[1] != HDPATH_1_LEGACY)) ||
       hdPath[3] != HDPATH_3_DEFAULT) {
     THROW(APDU_CODE_INVALID_HD_PATH_COIN_VALUE);
   }
@@ -139,14 +131,11 @@ static void extractHDPath_HRP(uint32_t rx, uint32_t offset) {
       ZEMU_LOGF(50, "Chain config not supported for: %s\n", bech32_hrp)
       THROW(APDU_CODE_CHAIN_CONFIG_NOT_SUPPORTED);
     }
-  } else if (hdPath[1] == HDPATH_ETH_1_DEFAULT) {
-    THROW(APDU_CODE_INVALID_HD_PATH_COIN_VALUE);
   } else {
-    // No HRP was provided on the default Cosmos path. Restore the default
-    // "cosmos" HRP explicitly so the flow is self-contained and never reuses
-    // whatever HRP a previous (possibly rejected) request left in the global
-    // buffer.
-    const char default_hrp[] = "cosmos";
+    // No HRP was provided. Restore the default "ark" HRP explicitly so the
+    // flow is self-contained and never reuses whatever HRP a previous
+    // (possibly rejected) request left in the global buffer.
+    const char default_hrp[] = "ark";
     bech32_hrp_len = sizeof(default_hrp) - 1;
     MEMZERO(bech32_hrp, sizeof(bech32_hrp));
     MEMCPY(bech32_hrp, default_hrp, bech32_hrp_len);
@@ -243,12 +232,6 @@ __Z_INLINE void handleSign(volatile uint32_t *flags, volatile uint32_t *tx,
   // Let grab P2 value and if it's not valid, the parser should reject it
   const tx_type_e sign_type = (tx_type_e)G_io_apdu_buffer[OFFSET_P2];
 
-  if ((hdPath[1] == HDPATH_ETH_1_DEFAULT) && !app_mode_expert()) {
-    *flags |= IO_ASYNCH_REPLY;
-    view_custom_error_show(PIC(msg_error1), PIC(msg_error2));
-    THROW(APDU_CODE_DATA_INVALID);
-  }
-
   // Put address in output buffer, we will use it to confirm source address
   zxerr_t zxerr = app_fill_address();
   if (zxerr != zxerr_ok) {
@@ -273,18 +256,6 @@ __Z_INLINE void handleSign(volatile uint32_t *flags, volatile uint32_t *tx,
     *tx += (error_msg_length);
     THROW(APDU_CODE_DATA_INVALID);
   }
-
-#ifdef HAVE_SWAP
-  if (G_swap_state.called_from_swap && G_swap_state.should_exit &&
-      error_msg == NULL) {
-    // Call app_sign without going through UI display, the UI validation was
-    // done in Exchange app already
-    app_sign();
-    // Go back to Exchange and report our success to display the modal
-    finalize_exchange_sign_transaction(true);
-    // Unreachable
-  }
-#endif
 
   CHECK_APP_CANARY()
   view_review_init(tx_getItem, tx_getNumItems, app_sign);
@@ -360,18 +331,7 @@ void handleApdu(volatile uint32_t *flags, volatile uint32_t *tx, uint32_t rx) {
       G_io_apdu_buffer[*tx + 1] = sw & 0xFF;
       *tx += 2;
     }
-    FINALLY {
-#ifdef HAVE_SWAP
-      if (G_swap_state.called_from_swap && G_swap_state.should_exit) {
-        // Swap checking failed, send reply now and exit, don't wait next cycle
-        if (sw != 0) {
-          io_exchange(CHANNEL_APDU | IO_RETURN_AFTER_TX, *tx);
-        }
-        // Go back to exchange and report our status
-        finalize_exchange_sign_transaction(sw == 0);
-      }
-#endif
-    }
+    FINALLY {}
   }
   END_TRY;
 }

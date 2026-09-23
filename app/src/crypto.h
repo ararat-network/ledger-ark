@@ -28,13 +28,6 @@ extern "C" {
 
 #define MAX_BECH32_HRP_LEN 83u
 
-// Uncompressed public key format prefix byte length (0x04 prefix)
-#define PK_UNCOMPRESSED_FORMAT_PREFIX_LEN 1
-
-// Ethereum address constants
-#define ETH_ADDRESS_LEN 20
-#define ETH_ADDRESS_HASH_OFFSET 12 // Keccak-256 hash offset (32 - 20)
-
 // Minimum buffer space needed for encoded address beyond public key
 #define MIN_ADDRESS_BUFFER_SPACE 50
 
@@ -49,10 +42,6 @@ zxerr_t crypto_fillAddress(uint8_t *buffer, uint16_t bufferLen,
 zxerr_t crypto_sign(uint8_t *signature, uint16_t signatureMaxlen,
                     uint16_t *signatureLen);
 
-zxerr_t crypto_swap_fillAddress(uint32_t *hdPath_swap, uint8_t hdPathLen_swap,
-                                char *hrp, address_encoding_e encode_type,
-                                char *buffer, uint16_t bufferLen,
-                                uint16_t *addrResponseLen);
 #ifdef __cplusplus
 }
 #endif

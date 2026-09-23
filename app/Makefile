@@ -23,11 +23,11 @@ endif
 ########################################
 #        Mandatory configuration       #
 ########################################
-# Upload targets to configure the devices 
+# Upload targets to configure the devices
 include $(BOLOS_SDK)/Makefile.defines
 
 # Application name
-APPNAME = "Cosmos"
+APPNAME = "Ark"
 
 # Application version
 include $(CURDIR)/Makefile.version
@@ -65,7 +65,8 @@ CURVE_APP_LOAD_PARAMS = secp256k1
 # If your app needs it, you can specify multiple path by using:
 # `PATH_APP_LOAD_PARAMS = "44'/1'" "45'/1'"`
 
-APPPATH =  "44'/118'" "44'/60'"
+# 330' continues Terra Classic keys; 118' serves pre-2019 legacy Terra wallets.
+APPPATH =  "44'/330'" "44'/118'"
 $(info PATHS LIST = $(APPPATH))
 PATH_APP_LOAD_PARAMS = $(APPPATH)
 
@@ -76,14 +77,13 @@ PATH_APP_LOAD_PARAMS = $(APPPATH)
 #   * It must at least contains one value.
 #   * Values can be the app ticker or anything else but should be unique.
 ifeq ($(COIN),)
-    COIN=ATOM
+    COIN=NOAH
 endif
 $(info COIN  = [$(COIN)])
 VARIANT_PARAM=COIN
 VARIANT_VALUES=$(COIN)
 
 INCLUDES_PATH += $(CURDIR)/src/common
-INCLUDES_PATH += $(CURDIR)/src/swap
 
 ########################################
 # Application communication interfaces #
@@ -128,17 +128,6 @@ endif
 
 # Add the PRODUCTION_BUILD definition to the compiler flags
 DEFINES += PRODUCTION_BUILD=$(PRODUCTION_BUILD)
-
-ifeq ($(COIN),ATOM)
-    HAVE_SWAP ?= 1
-endif
-
-ifeq ($(HAVE_SWAP), 1)
-    $(info ************ HAVE_SWAP  = [ENABLED])
-    DEFINES += HAVE_SWAP=$(HAVE_SWAP)
-else
-    $(info ************ HAVE_SWAP  = [DISABLED])
-endif
 
 ########################################
 

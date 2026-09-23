@@ -23,8 +23,10 @@ extern "C" {
 #define HDPATH_LEN_DEFAULT 5
 
 #define HDPATH_0_DEFAULT (0x80000000u | 0x2cu)
-#define HDPATH_1_DEFAULT (0x80000000u | 0x76u)
-#define HDPATH_ETH_1_DEFAULT (0x80000000u | 0x3cu)
+// 330 is the Terra coin type: Ark accounts continue Terra Classic keys.
+#define HDPATH_1_DEFAULT (0x80000000u | 0x14au)
+// Pre-2019 Terra wallets derived at the Cosmos coin type.
+#define HDPATH_1_LEGACY (0x80000000u | 0x76u)
 #define HDPATH_2_DEFAULT (0x80000000u | 0u)
 #define HDPATH_3_DEFAULT (0u)
 
@@ -39,29 +41,23 @@ typedef enum { tx_json = 0, tx_textual } tx_type_e;
 
 typedef enum {
   BECH32_COSMOS = 0,
-  BECH32_ETH,
   UNSUPPORTED = 0xFF,
 } address_encoding_e;
 
 #define VIEW_ADDRESS_OFFSET_SECP256K1 PK_LEN_SECP256K1
 #define VIEW_ADDRESS_LAST_PAGE_DEFAULT 0
 
-#define MENU_MAIN_APP_LINE1 "Cosmos"
+#define MENU_MAIN_APP_LINE1 "Ark"
 #define MENU_MAIN_APP_LINE2 "Ready"
 #define APPVERSION_LINE1 "Version:"
 #define APPVERSION_LINE2 ("v" APPVERSION)
 
-#define COIN_DEFAULT_CHAINID "cosmoshub-4"
-#define OSMOSIS_CHAINID "osmosis-1"
-#define DYDX_CHAINID "dydx-mainnet-1"
-#define MANTRA_CHAINID "mantra-1"
-#define XION_CHAINID "xion-mainnet-1"
-#define CELESTIA_CHAINID "celestia"
+#define COIN_DEFAULT_CHAINID "ark-1"
 
-// In non-expert mode, the app will convert from uatom to ATOM
-#define COIN_DEFAULT_DENOM_BASE "uatom"
-#define COIN_DEFAULT_DENOM_REPR "ATOM"
-#define COIN_DEFAULT_DENOM_FACTOR 6u
+// In non-expert mode, the app will convert from anoah to NOAH
+#define COIN_DEFAULT_DENOM_BASE "anoah"
+#define COIN_DEFAULT_DENOM_REPR "NOAH"
+#define COIN_DEFAULT_DENOM_FACTOR 18u
 #define COIN_DEFAULT_DENOM_TRIMMING 6u
 
 // Coin denoms may be up to 128 characters long
@@ -92,7 +88,6 @@ typedef enum {
 #define APDU_CODE_HRP_WRONG_LENGTH 0x698A
 #define APDU_CODE_INVALID_HD_PATH_COIN_VALUE 0x698B
 #define APDU_CODE_CHAIN_CONFIG_NOT_SUPPORTED 0x698C
-#define APDU_CODE_EXPERT_MODE_REQUIRED_FOR_ETH_CHAIN 0x698D
 
 #ifdef __cplusplus
 }
