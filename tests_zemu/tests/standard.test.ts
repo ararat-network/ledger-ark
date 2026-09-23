@@ -68,17 +68,17 @@ describe('Standard', function () {
       const app = new CosmosApp(sim.getTransport())
 
       // Derivation path. First 3 items are automatically hardened!
-      const path = "m/44'/118'/5'/0/3"
-      const resp = await app.getAddressAndPubKey(path, 'cosmos')
+      const path = "m/44'/330'/5'/0/3"
+      const resp = await app.getAddressAndPubKey(path, 'ark')
 
       console.log(resp)
 
       expect(resp).toHaveProperty('bech32_address')
       expect(resp).toHaveProperty('compressed_pk')
 
-      expect(resp.bech32_address).toEqual('cosmos1wkd9tfm5pqvhhaxq77wv9tvjcsazuaykwsld65')
+      expect(resp.bech32_address).toEqual('ark1rpml0hh6kc8g6at2lsatzkd550yc2ngnxrdxgt')
       expect(resp.compressed_pk.length).toEqual(33)
-      expect(resp.compressed_pk.toString("hex")).toEqual('035c986b9ae5fbfb8e1e9c12c817f5ef8fdb821cdecaa407f1420ec4f8f1d766bf')
+      expect(resp.compressed_pk.toString("hex")).toEqual('0389ec5e88cd420accbb73b35096b6ab50b42c501422443f3158cbe5d5634ef851')
     } finally {
       await sim.close()
     }
@@ -96,8 +96,8 @@ describe('Standard', function () {
       const app = new CosmosApp(sim.getTransport())
 
       // Derivation path. First 3 items are automatically hardened!
-      const path = "m/44'/118'/5'/0/3"
-      const respRequest = app.showAddressAndPubKey(path, 'cosmos')
+      const path = "m/44'/330'/5'/0/3"
+      const respRequest = app.showAddressAndPubKey(path, 'ark')
       // Wait until we are not in the main menu
       await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
       await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-show_address`)
@@ -108,93 +108,63 @@ describe('Standard', function () {
       expect(resp).toHaveProperty('bech32_address')
       expect(resp).toHaveProperty('compressed_pk')
 
-      expect(resp.bech32_address).toEqual('cosmos1wkd9tfm5pqvhhaxq77wv9tvjcsazuaykwsld65')
+      expect(resp.bech32_address).toEqual('ark1rpml0hh6kc8g6at2lsatzkd550yc2ngnxrdxgt')
       expect(resp.compressed_pk.length).toEqual(33)
-      expect(resp.compressed_pk.toString("hex")).toEqual('035c986b9ae5fbfb8e1e9c12c817f5ef8fdb821cdecaa407f1420ec4f8f1d766bf')
+      expect(resp.compressed_pk.toString("hex")).toEqual('0389ec5e88cd420accbb73b35096b6ab50b42c501422443f3158cbe5d5634ef851')
     } finally {
       await sim.close()
     }
   })
 
-  test.concurrent.each(DEVICE_MODELS)('show Eth address', async function (m) {
-    const sim = new Zemu(m.path)
-    try {
-      await sim.start({
-        ...defaultOptions,
-        model: m.name,
-        approveKeyword: isTouchDevice(m.name) ? 'Confirm' : '',
-        approveAction: ButtonKind.DynamicTapButton,
-      })
-      const app = new CosmosApp(sim.getTransport())
-
-      // Derivation path. First 3 items are automatically hardened!
-      const path = "m/44'/60'/0'/0/1"
-      const hrp = 'inj'
-
-      // check with invalid HRP
-      const errorRespPk = app.getAddressAndPubKey(path, 'cosmos')
-      await expect(errorRespPk).rejects.toMatchObject({
-        returnCode: 0x698C,
-        errorMessage: 'Chain config not supported'
-      })
-
-      const respRequest = app.showAddressAndPubKey(path, hrp)
-      // Wait until we are not in the main menu
-      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
-      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-show_eth_address`)
-
-      const resp = await respRequest
-      console.log(resp)
-
-      expect(resp).toHaveProperty('bech32_address')
-      expect(resp).toHaveProperty('compressed_pk')
-
-      expect(resp.compressed_pk.length).toEqual(33)
-
-      // Verify address
-      const secp256k1 = require("secp256k1");
-      const keccak = require("keccak256");
-      const { bech32 } = require("bech32");
-
-      // Take the compressed pubkey and verify that the expected address can be computed
-      const uncompressPubKeyUint8Array = secp256k1.publicKeyConvert(resp.compressed_pk, false).subarray(1);
-      const ethereumAddressBuffer = Buffer.from(keccak(Buffer.from(uncompressPubKeyUint8Array))).subarray(-20);
-      const eth_address = bech32.encode(hrp, bech32.toWords(ethereumAddressBuffer)); // "cosmos15n2h0lzvfgc8x4fm6fdya89n78x6ee2fm7fxr3"
-
-      expect(resp.bech32_address).toEqual(eth_address)
-      expect(resp.bech32_address).toEqual('inj15n2h0lzvfgc8x4fm6fdya89n78x6ee2f3h7z3f')
-    } finally {
-      await sim.close()
-    }
-  })
-
-  test.concurrent.each(DEVICE_MODELS)('chain config mismatch on the generic Cosmos path', async function (m) {
+  test.concurrent.each(DEVICE_MODELS)('get legacy address', async function (m) {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      // 'inj' is pinned to the Ethereum-style 60' derivation. Asking for it on
-      // the generic 118' path used to take the "always allowed for 118" branch
-      // and hand back a secp256k1 Cosmos address wearing an inj1... prefix --
-      // an address the user cannot receive on, from a request the device
-      // accepted without ever showing that it had substituted the chain.
+      // Pre-2019 Terra wallets derived at the Cosmos coin type. The legacy
+      // 118' path stays accepted so those holders can reach their accounts.
       const path = "m/44'/118'/0'/0/0"
+      const resp = await app.getAddressAndPubKey(path, 'ark')
 
-      await expect(app.getAddressAndPubKey(path, 'inj')).rejects.toMatchObject({
-        returnCode: 0x698C,
-        errorMessage: 'Chain config not supported'
+      console.log(resp)
+
+      expect(resp).toHaveProperty('bech32_address')
+      expect(resp).toHaveProperty('compressed_pk')
+
+      expect(resp.bech32_address).toEqual('ark1w34k53py5v5xyluazqpq65agyajavep2nns3mh')
+      expect(resp.compressed_pk.length).toEqual(33)
+      expect(resp.compressed_pk.toString("hex")).toEqual('034fef9cd7c4c63588d3b03feb5281b9d232cba34d6f3d71aee59211ffbfe1fe87')
+    } finally {
+      await sim.close()
+    }
+  })
+
+  test.concurrent.each(DEVICE_MODELS)('unsupported coin type is refused', async function (m) {
+    const sim = new Zemu(m.path)
+    try {
+      await sim.start({ ...defaultOptions, model: m.name })
+      const app = new CosmosApp(sim.getTransport())
+
+      // The app serves 330' and the legacy 118' only. The Ethereum-style 60'
+      // derivation was removed with the ETH address support, so the path is
+      // refused before the HRP is even considered.
+      const path = "m/44'/60'/0'/0/1"
+
+      await expect(app.getAddressAndPubKey(path, 'ark')).rejects.toMatchObject({
+        returnCode: 0x698B,
       })
 
       // Same guard on the confirm-on-device entry point: it has to fail before
       // anything reaches the screen.
-      await expect(app.showAddressAndPubKey(path, 'inj')).rejects.toMatchObject({
-        returnCode: 0x698C,
-        errorMessage: 'Chain config not supported'
+      await expect(app.showAddressAndPubKey(path, 'ark')).rejects.toMatchObject({
+        returnCode: 0x698B,
       })
 
-      // The chains the 118' path is actually for keep working.
-      const resp = await app.getAddressAndPubKey(path, 'osmo')
+      // There is no HRP table: any well-formed HRP works on a supported path,
+      // so wallets that re-encode the same key under another prefix keep
+      // working.
+      const resp = await app.getAddressAndPubKey("m/44'/330'/0'/0/0", 'osmo')
       expect(resp).toHaveProperty('bech32_address')
       expect(resp.bech32_address.startsWith('osmo1')).toBe(true)
       expect(resp.compressed_pk.length).toEqual(33)
@@ -203,34 +173,31 @@ describe('Standard', function () {
     }
   })
 
-  test.concurrent.each(DEVICE_MODELS)('malformed HRP cannot smuggle a known chain onto the Cosmos path', async function (m) {
+  test.concurrent.each(DEVICE_MODELS)('malformed HRP is refused', async function (m) {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
 
       // The HRP length is declared out of band, so the bytes in between do not
-      // have to form a C string. 'inj\0X' announced as 5 bytes is not the 'inj'
-      // table entry (the match compares against strlen of the entry), so it used
-      // to reach the generic 118' fallback and be accepted -- and the encoder,
-      // which measures the HRP with strlen, then truncated it back to 'inj'. The
-      // device answered with an inj1... address derived on the Cosmos path,
-      // which is exactly what the chain-config table exists to refuse.
-      await expect(app.getAddressAndPubKey(path, 'inj\u0000X')).rejects.toMatchObject({
+      // have to form a C string. The encoder measures the HRP with strlen, so
+      // 'ark\0X' announced as 5 bytes would be truncated back to 'ark': the
+      // device would answer under a different HRP than the one it validated.
+      await expect(app.getAddressAndPubKey(path, 'ark\u0000X')).rejects.toMatchObject({
         returnCode: 0x698C,
         errorMessage: 'Chain config not supported'
       })
 
       // Same on the confirm-on-device entry point: nothing may reach the screen.
-      await expect(app.showAddressAndPubKey(path, 'inj\u0000X')).rejects.toMatchObject({
+      await expect(app.showAddressAndPubKey(path, 'ark\u0000X')).rejects.toMatchObject({
         returnCode: 0x698C,
         errorMessage: 'Chain config not supported'
       })
 
       // A trailing NUL counted inside the declared length is the same bypass.
-      await expect(app.getAddressAndPubKey(path, 'cosmos\u0000')).rejects.toMatchObject({
+      await expect(app.getAddressAndPubKey(path, 'ark\u0000')).rejects.toMatchObject({
         returnCode: 0x698C,
         errorMessage: 'Chain config not supported'
       })
@@ -238,17 +205,17 @@ describe('Standard', function () {
       // bech32 HRPs are printable lowercase ASCII. These were already refused,
       // but only once the encoder saw them -- two layers below the chain-config
       // decision, and reported as a generic execution error.
-      for (const hrp of ['INJ', 'CoSmOs', 'in\u0001j', 'in j']) {
+      for (const hrp of ['ARK', 'ArK', 'ar\u0001k', 'ar k']) {
         await expect(app.getAddressAndPubKey(path, hrp)).rejects.toMatchObject({
           returnCode: 0x698C,
           errorMessage: 'Chain config not supported'
         })
       }
 
-      // The long tail of valid 118' chains is untouched by any of the above.
-      const resp = await app.getAddressAndPubKey(path, 'akash')
+      // Well-formed HRPs are untouched by any of the above, on both paths.
+      const resp = await app.getAddressAndPubKey(path, 'ark')
       expect(resp).toHaveProperty('bech32_address')
-      expect(resp.bech32_address.startsWith('akash1')).toBe(true)
+      expect(resp.bech32_address.startsWith('ark1')).toBe(true)
       expect(resp.compressed_pk.length).toEqual(33)
     } finally {
       await sim.close()
@@ -267,8 +234,8 @@ describe('Standard', function () {
       const app = new CosmosApp(sim.getTransport())
 
       // Derivation path. First 3 items are automatically hardened!
-      const path = "m/44'/118'/2147483647'/0/4294967295"
-      const resp = app.showAddressAndPubKey(path, 'cosmos')
+      const path = "m/44'/330'/2147483647'/0/4294967295"
+      const resp = app.showAddressAndPubKey(path, 'ark')
       console.log(resp)
 
       await expect(resp).rejects.toMatchObject({
@@ -295,8 +262,8 @@ describe('Standard', function () {
       await sim.toggleExpertMode();
 
       // Derivation path. First 3 items are automatically hardened!
-      const path = "m/44'/118'/2147483647'/0/4294967295"
-      const respRequest = app.showAddressAndPubKey(path, 'cosmos')
+      const path = "m/44'/330'/2147483647'/0/4294967295"
+      const respRequest = app.showAddressAndPubKey(path, 'ark')
 
       // Wait until we are not in the main menu
       await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
@@ -308,7 +275,7 @@ describe('Standard', function () {
       expect(resp).toHaveProperty('bech32_address')
       expect(resp).toHaveProperty('compressed_pk')
 
-      expect(resp.bech32_address).toEqual('cosmos1ex7gkwwmq4vcgdwcalaq3t20pgwr37u6ntkqzh')
+      expect(resp.bech32_address).toEqual('ark1w546yt00vx7ed7c6kkrdy8df3r6rpln53sv2t7')
       expect(resp.compressed_pk.length).toEqual(33)
     } finally {
       await sim.close()

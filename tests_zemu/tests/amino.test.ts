@@ -14,7 +14,7 @@
  *  limitations under the License.
  ******************************************************************************* */
 
-import Zemu, { ClickNavigation, TouchNavigation, isTouchDevice } from '@zondax/zemu'
+import Zemu from '@zondax/zemu'
 // @ts-ignore
 import CosmosApp from '@zondax/ledger-cosmos-js'
 import {
@@ -38,8 +38,6 @@ import {
 import secp256k1 from 'secp256k1/elliptic'
 // @ts-ignore
 import crypto from 'crypto'
-import { ButtonKind, IButton, SwipeDirection } from '@zondax/zemu/dist/types'
-import { getTouchElement } from "@zondax/zemu/dist/buttons";
 
 jest.setTimeout(120000)
 
@@ -60,9 +58,9 @@ describe('Amino', function () {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_basic), 'utf-8')
-      const hrp = 'cosmos'
+      const hrp = 'ark'
 
       // get address / publickey
       const respPk = await app.getAddressAndPubKey(path, hrp)
@@ -104,19 +102,19 @@ describe('Amino', function () {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_basic), 'utf-8')
 
       // Prime the global HRP with a rejected mixed-case GET_ADDR on the default
-      // Cosmos path. An upper-case HRP is not a valid bech32 prefix, so
+      // path. An upper-case HRP is not a valid bech32 prefix, so
       // checkChainConfig() refuses it outright - but extractHRP() runs first,
       // so the mixed-case HRP is still written into the shared global buffer
       // before the request fails.
-      const rejected = app.getAddressAndPubKey(path, 'CoSmOs')
+      const rejected = app.getAddressAndPubKey(path, 'ArK')
       await expect(rejected).rejects.toMatchObject({ returnCode: 0x698c })
 
       // A later SIGN that omits the HRP must still behave as a self-contained
-      // default-Cosmos flow and reach review, rather than reusing the leftover
+      // default-HRP flow and reach review, rather than reusing the leftover
       // HRP and aborting before review.
       const signatureRequest = app.sign(path, tx, undefined, AMINO_JSON_TX)
 
@@ -127,7 +125,7 @@ describe('Amino', function () {
       expect(resp).toHaveProperty('signature')
 
       // Fetch the pubkey with a valid HRP and verify the produced signature.
-      const respPk = await app.getAddressAndPubKey(path, 'cosmos')
+      const respPk = await app.getAddressAndPubKey(path, 'ark')
       const hash = crypto.createHash('sha256')
       const msgHash = Uint8Array.from(hash.update(tx).digest())
       const signatureDER = resp.signature
@@ -140,28 +138,28 @@ describe('Amino', function () {
     }
   })
 
-  test.concurrent.each(DEVICE_MODELS)('sign rejects a malformed HRP on the generic Cosmos path', async function (m) {
+  test.concurrent.each(DEVICE_MODELS)('sign rejects a malformed HRP', async function (m) {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_basic), 'utf-8')
 
       // SIGN declares its HRP in the first chunk (extractHDPath_HRP), the second
-      // call site of the same chain-config check. A NUL-smuggled 'inj' has to be
+      // call site of the same chain-config check. A NUL-smuggled HRP has to be
       // refused here as well, before any of the transaction reaches review --
-      // otherwise the device signs for the Cosmos 118' key while the host
-      // believes it is talking to Injective.
-      await expect(app.sign(path, tx, 'inj\u0000X', AMINO_JSON_TX)).rejects.toMatchObject({
+      // otherwise the device signs under an HRP other than the one the host
+      // declared.
+      await expect(app.sign(path, tx, 'ark\u0000X', AMINO_JSON_TX)).rejects.toMatchObject({
         returnCode: 0x698c,
         errorMessage: 'Chain config not supported',
       })
 
       // Uppercase is refused on the same call site, and now with the
       // chain-config status word rather than a generic execution error.
-      await expect(app.sign(path, tx, 'COSMOS', AMINO_JSON_TX)).rejects.toMatchObject({
+      await expect(app.sign(path, tx, 'ARK', AMINO_JSON_TX)).rejects.toMatchObject({
         returnCode: 0x698c,
         errorMessage: 'Chain config not supported',
       })
@@ -182,9 +180,9 @@ describe('Amino', function () {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_basic2))
-      const hrp = 'cosmos'
+      const hrp = 'ark'
 
       // get address / publickey
       const respPk = await app.getAddressAndPubKey(path, hrp)
@@ -226,9 +224,9 @@ describe('Amino', function () {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_basic))
-      const hrp = 'cosmos'
+      const hrp = 'ark'
 
       // get address / publickey
       const respPk = await app.getAddressAndPubKey(path, hrp)
@@ -270,9 +268,9 @@ describe('Amino', function () {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(ibc_denoms))
-      const hrp = 'cosmos'
+      const hrp = 'ark'
 
       // get address / publickey
       const respPk = await app.getAddressAndPubKey(path, hrp)
@@ -314,9 +312,9 @@ describe('Amino', function () {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(setWithdrawAddress))
-      const hrp = 'cosmos'
+      const hrp = 'ark'
 
       // get address / publickey
       const respPk = await app.getAddressAndPubKey(path, hrp)
@@ -358,9 +356,9 @@ describe('Amino', function () {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(cliGovDeposit))
-      const hrp = 'cosmos'
+      const hrp = 'ark'
 
       // get address / publickey
       const respPk = await app.getAddressAndPubKey(path, hrp)
@@ -405,9 +403,9 @@ describe('Amino', function () {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_msgMultiSendAndSend))
-      const hrp = 'cosmos'
+      const hrp = 'ark'
 
       // get address / publickey
       const respPk = await app.getAddressAndPubKey(path, hrp)
@@ -452,9 +450,9 @@ describe('Amino', function () {
       // Activate expert mode
       await sim.toggleExpertMode()
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_msgMultiSend))
-      const hrp = 'cosmos'
+      const hrp = 'ark'
 
       // get address / publickey
       const respPk = await app.getAddressAndPubKey(path, hrp)
@@ -501,7 +499,7 @@ describe('Amino', function () {
       // Activate expert mode
       await sim.toggleExpertMode()
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(wasm_execute_contract_boundary_test))
       const hrp = 'neutron'
 
@@ -539,98 +537,25 @@ describe('Amino', function () {
     }
   })
 
-  test.concurrent.each(DEVICE_MODELS)('SetWithdrawAddress-eth', async function (m) {
+  test.concurrent.each(DEVICE_MODELS)('sign refuses the removed eth path', async function (m) {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      // Change to expert mode so we can skip fields
-      await sim.toggleExpertMode()
-
-      const path = "m/44'/60'/0'/0/0"
-      const tx = Buffer.from(JSON.stringify(setWithdrawAddress))
-      const hrp = 'inj'
-
-      // get address / publickey
-      const respPk = await app.getAddressAndPubKey(path, hrp)
-      expect(respPk).toHaveProperty('compressed_pk')
-      expect(respPk).toHaveProperty('bech32_address')
-      console.log(respPk)
-
-      // do not wait here..
-      const signatureRequest = app.sign(path, tx, hrp, AMINO_JSON_TX)
-
-      // Wait until we are not in the main menu
-      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
-      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-setWithdrawAddress-eth`)
-
-      const resp = await signatureRequest
-      console.log(resp)
-
-      expect(resp).toHaveProperty('signature')
-
-      // Now verify the signature
-      const sha3 = require('js-sha3')
-      const msgHash = Buffer.from(sha3.keccak256(tx), 'hex')
-
-      const signatureDER = resp.signature
-      const signature = secp256k1.signatureImport(Uint8Array.from(signatureDER))
-
-      const pk = Uint8Array.from(respPk.compressed_pk)
-
-      const signatureOk = secp256k1.ecdsaVerify(signature, msgHash, pk)
-      expect(signatureOk).toEqual(true)
-    } finally {
-      await sim.close()
-    }
-  })
-
-  test.concurrent.each(DEVICE_MODELS)('sign basic normal Eth', async function (m) {
-    const sim = new Zemu(m.path)
-    try {
-      await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
-
-      // Enable expert to allow sign with eth path
-      await sim.toggleExpertMode()
-
+      // The Ethereum-style 60' derivation was removed with the ETH address
+      // support: the path is refused at extraction, before the HRP or any of
+      // the transaction is looked at.
       const path = "m/44'/60'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_basic), 'utf-8')
-      const hrp = 'inj'
 
-      // check with invalid HRP
-      const errorRespPk = app.getAddressAndPubKey(path, 'forbiddenHRP')
-      await expect(errorRespPk).rejects.toMatchObject({
-        returnCode: 0x698c,
-        errorMessage: 'Chain config not supported',
+      await expect(app.sign(path, tx, 'ark', AMINO_JSON_TX)).rejects.toMatchObject({
+        returnCode: 0x698b,
       })
 
-      // do not wait here..
-      const signatureRequest = app.sign(path, tx, hrp)
-
-      // Wait until we are not in the main menu
-      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
-      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-sign_basic_eth`)
-
-      const resp = await signatureRequest
-      console.log(resp)
-
-      // get address / publickey
-      const respPk = await app.getAddressAndPubKey(path, hrp)
-      console.log(respPk)
-
-      // Now verify the signature
-      const sha3 = require('js-sha3')
-      const msgHash = Buffer.from(sha3.keccak256(tx), 'hex')
-
-      const signatureDER = resp.signature
-      const signature = secp256k1.signatureImport(Uint8Array.from(signatureDER))
-
-      const pk = Uint8Array.from(respPk.compressed_pk)
-
-      const signatureOk = secp256k1.ecdsaVerify(signature, msgHash, pk)
-      expect(signatureOk).toEqual(true)
+      await expect(app.getAddressAndPubKey(path, 'ark')).rejects.toMatchObject({
+        returnCode: 0x698b,
+      })
     } finally {
       await sim.close()
     }
@@ -645,7 +570,7 @@ describe('Amino', function () {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(babylonWrappedDelegate), 'utf-8')
       const hrp = 'bbn'
 
@@ -689,7 +614,7 @@ describe('Amino', function () {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new CosmosApp(sim.getTransport())
 
-      const path = "m/44'/118'/0'/0/0"
+      const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(babylonWrappedUndelegate), 'utf-8')
       const hrp = 'bbn'
 
@@ -727,57 +652,4 @@ describe('Amino', function () {
     }
   })
 
-  test.concurrent.each(DEVICE_MODELS)('sign basic normal Eth no expert', async function (m) {
-    const sim = new Zemu(m.path)
-    try {
-      await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
-
-      const path = "m/44'/60'/0'/0/0"
-      const tx = Buffer.from(JSON.stringify(example_tx_str_basic), 'utf-8')
-      const hrp = 'inj'
-      // get address / publickey
-      const respPk = await app.getAddressAndPubKey(path, hrp)
-      console.log(respPk)
-
-      // do not wait here..
-      const signatureRequest = app.sign(path, tx, hrp)
-
-      // Wait until we are not in the main menu
-      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
-      let nav = undefined
-      if (isTouchDevice(m.name)) {
-        const confirmButton: IButton = getTouchElement(m.name, ButtonKind.ConfirmYesButton)
-        nav = new TouchNavigation(m.name, [ButtonKind.ConfirmYesButton]);
-        nav.schedule[0].button = confirmButton;
-      } else {
-        nav = new ClickNavigation([1, 0]);
-      }
-
-      // Start navigation without await
-      sim.navigateAndCompareSnapshots('.', `${m.prefix.toLowerCase()}-sign_basic_eth_warning`, nav.schedule)
-
-      // Handle both errors
-      try {
-        await signatureRequest
-        throw new Error('Expected sign to fail')
-      } catch (error: any) {
-        // First error from ledger-js
-        expect(error.message).toBe('Data is invalid')
-
-        // Wait a bit to ensure the second error is caught
-        await new Promise(resolve => setTimeout(resolve, 1000))
-
-        // Second error after navigation
-        try {
-          await signatureRequest
-          throw new Error('Expected second error')
-        } catch (error2: any) {
-          expect(error2.message).toBe('Data is invalid')
-        }
-      }
-    } finally {
-      await sim.close()
-    }
-  })
 })

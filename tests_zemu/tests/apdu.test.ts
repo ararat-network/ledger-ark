@@ -50,15 +50,15 @@ const ACCEPTED_STATUS = [
   SW_CLA_NOT_SUPPORTED,
 ]
 
-// m/44'/118'/0'/0/0 as five little-endian uint32 words, the layout extractHDPath
+// m/44'/330'/0'/0/0 as five little-endian uint32 words, the layout extractHDPath
 // memcpy's straight into hdPath.
-const HDPATH = Buffer.from('2c00008076000080000000800000000000000000', 'hex')
+const HDPATH = Buffer.from('2c0000804a010080000000800000000000000000', 'hex')
 
 // Arbitrary SignDoc fragment. This suite never completes a transaction, so the
 // payload only has to be non-empty.
 const CHUNK = Buffer.from('7b226163636f756e745f6e756d626572223a223022', 'hex')
 
-const GET_ADDR_ARGS = Buffer.concat([Buffer.from([6]), Buffer.from('cosmos'), HDPATH])
+const GET_ADDR_ARGS = Buffer.concat([Buffer.from([3]), Buffer.from('ark'), HDPATH])
 
 // Zemu wraps the transport in a proxy that raises TransportError for any status
 // word other than 0x9000, regardless of the accepted-status list handed to the
