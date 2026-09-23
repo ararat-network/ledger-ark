@@ -1,6 +1,6 @@
 Transaction Specification
 -------------------------
-Two types of transaction formats are supported by the Cosmos App, Json format and Textual format.
+Two types of transaction formats are supported by the Ark App, Json format and Textual format.
 
 ### JSON Format
 
@@ -27,9 +27,9 @@ Transactions passed to the Ledger device will be in the following format. The Le
 ```json
 {
   "account_number": "123",
-  "chain_id": "cosmoshub-4",
+  "chain_id": "ark-1",
   "fee": {
-    "amount": [{"amount": "4000", "denom": "uatom"}, ...],
+    "amount": [{"amount": "4000", "denom": "anoah"}, ...],
     "gas": "40000"
   },
   "memo": "this is a comment",
@@ -129,9 +129,9 @@ Transaction: 1 Messages
 > Message (1/1): cosmos.bank.v1beta1.MsgSend
 > From address: cosmos1ulav3hsenupswqfkw2y3sup5kgtqwnvqa8eyhs
 > To address: cosmos1ejrf4cur2wy6kfurg9f2jppp2h3afe5h6pkh5t
-> Amount: 10 ATOM
+> Amount: 10 NOAH
 End of Messages
-Fees: 0.002 uatom
+Fees: 0.002 anoah
 Gas limit: 100'000
 Hash of raw bytes: e237dc2e3f8f0b1d0310e1cd0b0ab5fc4a59e4bc3454d67eb65c3fdb0fa599c9
 ````
@@ -149,9 +149,9 @@ CBOR Envelope
     {1: "Message (1/1): cosmos.bank.v1beta1.MsgSend", 2: 1},
     {1: "From address: cosmos1ulav3hsenupswqfkw2y3sup5kgtqwnvqa8eyhs", 2: 1},
     {1: "To address: cosmos1ejrf4cur2wy6kfurg9f2jppp2h3afe5h6pkh5t", 2: 1},
-    {1: "Amount: 10 ATOM", 2: 1},
+    {1: "Amount: 10 NOAH", 2: 1},
     {1: "End of Messages"},
-    {1: "Fees: 0.002 uatom"},
+    {1: "Fees: 0.002 anoah"},
     {1: "Gas limit: 100'000", 3: true},
     { 1: "Hash of raw bytes: e237dc2e3f8f0b1d0310e1cd0b0ab5fc4a59e4bc3454d67eb65c3fdb0fa599c9", 3: true,},
 ]

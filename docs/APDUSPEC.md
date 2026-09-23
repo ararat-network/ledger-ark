@@ -1,4 +1,4 @@
-# Cosmos App - Ledger Nano S
+# Ark App
 ## General structure
 
 The general structure of commands and responses is as follows:
@@ -85,7 +85,7 @@ The general structure of commands and responses is as follows:
 | HRP_LEN    | byte(1)        | Bech32 HRP Length              | 1<=HRP_LEN<=83 |
 | HRP        | byte (HRP_LEN) | Bech32 HRP                     |                |
 | Path[0]    | byte (4)       | Derivation Path Data           | 44             |
-| Path[1]    | byte (4)       | Derivation Path Data           | 118 / 60       |
+| Path[1]    | byte (4)       | Derivation Path Data           | 330 / 118      |
 | Path[2]    | byte (4)       | Derivation Path Data           | ?              |
 | Path[3]    | byte (4)       | Derivation Path Data           | ?              |
 | Path[4]    | byte (4)       | Derivation Path Data           | ?              |
@@ -125,7 +125,7 @@ All other packets/chunks should contain message to sign
 | Field      | Type     | Content                | Expected  |
 | ---------- | -------- | ---------------------- | --------- |
 | Path[0]    | byte (4)       | Derivation Path Data           | 44             |
-| Path[1]    | byte (4)       | Derivation Path Data           | 118 / 60       |
+| Path[1]    | byte (4)       | Derivation Path Data           | 330 / 118      |
 | Path[2]    | byte (4)       | Derivation Path Data           | ?              |
 | Path[3]    | byte (4)       | Derivation Path Data           | ?              |
 | Path[4]    | byte (4)       | Derivation Path Data           | ?              |
