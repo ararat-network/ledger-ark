@@ -89,7 +89,7 @@
     "name": "completeTransferExpert",
     "tx": {
       "account_number": "0",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
@@ -131,7 +131,7 @@
     "parsingErr": "No error",
     "validationErr": "No error",
     "expected": [
-      "0 | Chain ID : cosmoshub-4",
+      "0 | Chain ID : ark-1",
       "1 | Account : 0",
       "2 | Sequence : 1",
       "3 | Source Address : cosmosaccaddr1d9h8qat5e4ehc5",
@@ -148,7 +148,7 @@
     "name": "completeTransfer",
     "tx": {
       "account_number": "0",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
@@ -260,7 +260,7 @@
     "name": "completeTransferNoMemo",
     "tx": {
       "account_number": "0",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
@@ -371,7 +371,7 @@
     "name": "completeTransferEmptyMemo",
     "tx": {
       "account_number": "0",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
@@ -512,7 +512,7 @@
     "name": "multipleTransfers",
     "tx": {
       "account_number": "0",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
@@ -595,12 +595,12 @@
     "name": "delegationExpert",
     "tx": {
       "account_number": "6571",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "5000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -612,7 +612,7 @@
           "value": {
             "amount": {
               "amount": "1000000",
-              "denom": "uatom"
+              "denom": "anoah"
             },
             "delegator_address": "cosmos102hty0jv2s29lyc4u0tv97z9v298e24t3vwtpl",
             "validator_address": "cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt9m5s03xfytvz7"
@@ -624,17 +624,17 @@
     "parsingErr": "No error",
     "validationErr": "No error",
     "expected": [
-      "0 | Chain ID : cosmoshub-4",
+      "0 | Chain ID : ark-1",
       "1 | Account : 6571",
       "2 | Sequence : 1",
       "3 | Type : Delegate",
-      "4 | Amount : 1000000 uatom",
+      "4 | Amount : 1000000 anoah",
       "5 | Delegator [1/2] : cosmos102hty0jv2s29lyc4u0tv97z9v298e24t",
       "5 | Delegator [2/2] : 3vwtpl",
       "6 | Validator [1/2] : cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt",
       "6 | Validator [2/2] : 9m5s03xfytvz7",
       "7 | Memo : Zondax.ch",
-      "8 | Fee : 5000 uatom",
+      "8 | Fee : 5000 anoah",
       "9 | Gas : 200000"
     ],
     "expert": true
@@ -648,7 +648,7 @@
         "amount": [
           {
             "amount": "5000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -660,7 +660,7 @@
           "value": {
             "amount": {
               "amount": "1000000",
-              "denom": "uatom"
+              "denom": "anoah"
             },
             "delegator_address": "cosmos102hty0jv2s29lyc4u0tv97z9v298e24t3vwtpl",
             "validator_address": "cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt9m5s03xfytvz7"
@@ -676,13 +676,13 @@
       "1 | Account : 6571",
       "2 | Sequence : 1",
       "3 | Type : Delegate",
-      "4 | Amount : 1000000 uatom",
+      "4 | Amount : 1000000 anoah",
       "5 | Delegator [1/2] : cosmos102hty0jv2s29lyc4u0tv97z9v298e24t",
       "5 | Delegator [2/2] : 3vwtpl",
       "6 | Validator [1/2] : cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt",
       "6 | Validator [2/2] : 9m5s03xfytvz7",
       "7 | Memo : Zondax.ch",
-      "8 | Fee : 5000 uatom",
+      "8 | Fee : 5000 anoah",
       "9 | Gas : 200000"
     ],
     "expert": false
@@ -691,12 +691,12 @@
     "name": "delegation",
     "tx": {
       "account_number": "6571",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "5000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -708,7 +708,7 @@
           "value": {
             "amount": {
               "amount": "1000000",
-              "denom": "uatom"
+              "denom": "anoah"
             },
             "delegator_address": "cosmos102hty0jv2s29lyc4u0tv97z9v298e24t3vwtpl",
             "validator_address": "cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt9m5s03xfytvz7"
@@ -721,13 +721,13 @@
     "validationErr": "No error",
     "expected": [
       "0 | Type : Delegate",
-      "1 | Amount : 1.000000 ATOM",
+      "1 | Amount : 0.000000000001 NOAH",
       "2 | Delegator [1/2] : cosmos102hty0jv2s29lyc4u0tv97z9v298e24t",
       "2 | Delegator [2/2] : 3vwtpl",
       "3 | Validator [1/2] : cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt",
       "3 | Validator [2/2] : 9m5s03xfytvz7",
       "4 | Memo : Zondax.ch",
-      "5 | Fee : 0.005000 ATOM"
+      "5 | Fee : 0.000000000000005 NOAH"
     ],
     "expert": false
   },
@@ -780,7 +780,7 @@
     "name": "proposal",
     "tx": {
       "account_number": "2",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [],
         "gas": "500000"
@@ -821,12 +821,12 @@
     "name": "delegation2Expert",
     "tx": {
       "account_number": "6571",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "5000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -838,7 +838,7 @@
           "value": {
             "amount": {
               "amount": "1000000",
-              "denom": "uatom"
+              "denom": "anoah"
             },
             "delegator_address": "cosmos102hty0jv2s29lyc4u0tv97z9v298e24t3vwtpl",
             "validator_address": "cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt9m5s03xfytvz7"
@@ -850,17 +850,17 @@
     "parsingErr": "No error",
     "validationErr": "No error",
     "expected": [
-      "0 | Chain ID : cosmoshub-4",
+      "0 | Chain ID : ark-1",
       "1 | Account : 6571",
       "2 | Sequence : 0",
       "3 | Type : Delegate",
-      "4 | Amount : 1000000 uatom",
+      "4 | Amount : 1000000 anoah",
       "5 | Delegator [1/2] : cosmos102hty0jv2s29lyc4u0tv97z9v298e24t",
       "5 | Delegator [2/2] : 3vwtpl",
       "6 | Validator [1/2] : cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt",
       "6 | Validator [2/2] : 9m5s03xfytvz7",
       "7 | Memo : Delegated with Ledger from union.market",
-      "8 | Fee : 5000 uatom",
+      "8 | Fee : 5000 anoah",
       "9 | Gas : 200000"
     ],
     "expert": true
@@ -869,12 +869,12 @@
     "name": "delegation2",
     "tx": {
       "account_number": "6571",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "5000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -886,7 +886,7 @@
           "value": {
             "amount": {
               "amount": "1000000",
-              "denom": "uatom"
+              "denom": "anoah"
             },
             "delegator_address": "cosmos102hty0jv2s29lyc4u0tv97z9v298e24t3vwtpl",
             "validator_address": "cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt9m5s03xfytvz7"
@@ -899,13 +899,13 @@
     "validationErr": "No error",
     "expected": [
       "0 | Type : Delegate",
-      "1 | Amount : 1.000000 ATOM",
+      "1 | Amount : 0.000000000001 NOAH",
       "2 | Delegator [1/2] : cosmos102hty0jv2s29lyc4u0tv97z9v298e24t",
       "2 | Delegator [2/2] : 3vwtpl",
       "3 | Validator [1/2] : cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt",
       "3 | Validator [2/2] : 9m5s03xfytvz7",
       "4 | Memo : Delegated with Ledger from union.market",
-      "5 | Fee : 0.005000 ATOM"
+      "5 | Fee : 0.000000000000005 NOAH"
     ],
     "expert": false
   },
@@ -927,12 +927,12 @@
     "name": "badcase2",
     "tx": {
       "account_number": "6571",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "5000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -944,7 +944,7 @@
           "value": {
             "amount": {
               "amount": "1000000",
-              "denom": "uatom"
+              "denom": "anoah"
             },
             "delegator_address": "cosmos102hty0jv2s29lyc4u0tv97z9v298e24t3vwtpl",
             "validator_address": "cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt9m5s03xfytvz7"
@@ -956,17 +956,17 @@
     "parsingErr": "No error",
     "validationErr": "No error",
     "expected": [
-      "0 | Chain ID : cosmoshub-4",
+      "0 | Chain ID : ark-1",
       "1 | Account : 6571",
       "2 | Sequence : 0",
       "3 | Type : Delegate",
-      "4 | Amount : 1000000 uatom",
+      "4 | Amount : 1000000 anoah",
       "5 | Delegator [1/2] : cosmos102hty0jv2s29lyc4u0tv97z9v298e24t",
       "5 | Delegator [2/2] : 3vwtpl",
       "6 | Validator [1/2] : cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt",
       "6 | Validator [2/2] : 9m5s03xfytvz7",
       "7 | Memo : Delegated with Ledger from union.market",
-      "8 | Fee : 5000 uatom",
+      "8 | Fee : 5000 anoah",
       "9 | Gas : 200000"
     ],
     "expert": true
@@ -1011,12 +1011,12 @@
     "name": "groupingSmallExpert",
     "tx": {
       "account_number": "108",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "600",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -1043,7 +1043,7 @@
     "parsingErr": "No error",
     "validationErr": "No error",
     "expected": [
-      "0 | Chain ID : cosmoshub-4",
+      "0 | Chain ID : ark-1",
       "1 | Account : 108",
       "2 | Sequence : 106",
       "3 | Type : Withdraw Reward",
@@ -1055,7 +1055,7 @@
       "6 | Delegator [2/2] : hgqhwh",
       "7 | Validator [1/2] : cosmosvaloper1x88j7vp2xnw3zec8ur3g4waxy",
       "7 | Validator [2/2] : cyz7m0mahdv3p",
-      "8 | Fee : 600 uatom",
+      "8 | Fee : 600 anoah",
       "9 | Gas : 200000"
     ],
     "expert": true
@@ -1064,12 +1064,12 @@
     "name": "groupingSmall",
     "tx": {
       "account_number": "108",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "600",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -1103,7 +1103,7 @@
       "2 | Validator [2/2] : vjhennyh568ys",
       "3 | Validator [1/2] : cosmosvaloper1x88j7vp2xnw3zec8ur3g4waxy",
       "3 | Validator [2/2] : cyz7m0mahdv3p",
-      "4 | Fee : 0.000600 ATOM"
+      "4 | Fee : 0.0000000000000006 NOAH"
     ],
     "expert": false
   },
@@ -1111,12 +1111,12 @@
     "name": "groupingExpert",
     "tx": {
       "account_number": "108",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "600",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -1157,7 +1157,7 @@
     "parsingErr": "No error",
     "validationErr": "No error",
     "expected": [
-      "0 | Chain ID : cosmoshub-4",
+      "0 | Chain ID : ark-1",
       "1 | Account : 108",
       "2 | Sequence : 106",
       "3 | Type : Withdraw Reward",
@@ -1177,7 +1177,7 @@
       "10 | Delegator [2/2] : hgqhwh",
       "11 | Validator [1/2] : cosmosvaloper1ttfytaf43nkytzp8hkfjfgjc6",
       "11 | Validator [2/2] : 93ky4t3y2n2ku",
-      "12 | Fee : 600 uatom",
+      "12 | Fee : 600 anoah",
       "13 | Gas : 200000"
     ],
     "expert": true
@@ -1186,12 +1186,12 @@
     "name": "grouping_ledger_testcase",
     "tx": {
       "account_number": "108",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "600",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -1232,7 +1232,7 @@
     "parsingErr": "No error",
     "validationErr": "No error",
     "expected": [
-      "0 | Chain ID : cosmoshub-4",
+      "0 | Chain ID : ark-1",
       "1 | Account : 108",
       "2 | Sequence : 106",
       "3 | Type : Withdraw Reward",
@@ -1252,7 +1252,7 @@
       "10 | Delegator [2/2] : 7jycah",
       "11 | Validator [1/2] : cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk",
       "11 | Validator [2/2] : 542junl7rsvq6",
-      "12 | Fee : 600 uatom",
+      "12 | Fee : 600 anoah",
       "13 | Gas : 200000"
     ],
     "expert": true
@@ -1261,12 +1261,12 @@
     "name": "massive",
     "tx": {
       "account_number": "108",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "600",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -1391,7 +1391,7 @@
     "parsingErr": "No error",
     "validationErr": "No error",
     "expected": [
-      "0 | Chain ID : cosmoshub-4",
+      "0 | Chain ID : ark-1",
       "1 | Account : 108",
       "2 | Sequence : 106",
       "3 | Type : Withdraw Reward",
@@ -1459,7 +1459,7 @@
       "34 | Delegator [2/2] : hgqhwh",
       "35 | Validator [1/2] : cosmosvaloper1hjct6q7npsspsg3dgvzk3sdf8",
       "35 | Validator [2/2] : 9spmlpfdn6m9d",
-      "36 | Fee : 600 uatom",
+      "36 | Fee : 600 anoah",
       "37 | Gas : 200000"
     ],
     "expert": true
@@ -1468,12 +1468,12 @@
     "name": "combined",
     "tx": {
       "account_number": "108",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "600",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -1493,7 +1493,7 @@
             "delegator_address": "cosmos19umvgcvk8cxsvzemy239nj9ngc2ltukantgyp3",
             "validator_address": "cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk542junl7rsvq6",
             "amount": {
-              "denom": "uatom",
+              "denom": "anoah",
               "amount": "20139397"
             }
           }
@@ -1510,10 +1510,10 @@
       "2 | Validator [1/2] : cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk",
       "2 | Validator [2/2] : 542junl7rsvq6",
       "3 | Type : Delegate",
-      "4 | Amount : 20.139397 ATOM",
+      "4 | Amount : 0.000000000020139397 NOAH",
       "5 | Validator [1/2] : cosmosvaloper1648ynlpdw7fqa2axt0w2yp3fk",
       "5 | Validator [2/2] : 542junl7rsvq6",
-      "6 | Fee : 0.000600 ATOM"
+      "6 | Fee : 0.0000000000000006 NOAH"
     ],
     "expert": false
   },
@@ -1521,7 +1521,7 @@
     "name": "completeTransferWithTips",
     "tx": {
       "account_number": "0",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
@@ -1582,7 +1582,7 @@
     "parsingErr": "No error",
     "validationErr": "No error",
     "expected": [
-      "0 | Chain ID : cosmoshub-4",
+      "0 | Chain ID : ark-1",
       "1 | Account : 0",
       "2 | Sequence : 1",
       "3 | Source Address : cosmosaccaddr1d9h8qatxxINPUT",
@@ -1605,7 +1605,7 @@
     "name": "completeTransferWithTipsBasic",
     "tx": {
       "account_number": "0",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
@@ -1678,7 +1678,7 @@
     "name": "doubleFees",
     "tx": {
       "account_number": "0",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
@@ -1714,7 +1714,7 @@
     "parsingErr": "No error",
     "validationErr": "No error",
     "expected": [
-      "0 | Chain ID : cosmoshub-4",
+      "0 | Chain ID : ark-1",
       "1 | Account : 0",
       "2 | Sequence : 1",
       "3 | Fee [1/2] : 5 feecoin1",
@@ -1732,12 +1732,12 @@
     "name": "MsgWithdrawValidatorCommission",
     "tx": {
       "account_number": "6571",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "5000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -1760,7 +1760,7 @@
       "1 | Validator [1/2] : cosmosvaloper1grgelyng2v6v3t8z87wu3sxgt",
       "1 | Validator [2/2] : 9m5s03xfytvz7",
       "2 | Memo : Zondax.ch",
-      "3 | Fee : 0.005000 ATOM"
+      "3 | Fee : 0.000000000000005 NOAH"
     ],
     "expert": false
   },
@@ -1773,7 +1773,7 @@
         "amount": [
           {
             "amount": "0",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -1789,7 +1789,7 @@
                 "coins": [
                   {
                     "amount": "101000",
-                    "denom": "uatom"
+                    "denom": "anoah"
                   }
                 ]
               }
@@ -1800,7 +1800,7 @@
                 "coins": [
                   {
                     "amount": "1000",
-                    "denom": "uatom"
+                    "denom": "anoah"
                   }
                 ]
               },
@@ -1809,7 +1809,7 @@
                 "coins": [
                   {
                     "amount": "100000",
-                    "denom": "uatom"
+                    "denom": "anoah"
                   }
                 ]
               }
@@ -1828,14 +1828,14 @@
       "3 | Type : Multi Send",
       "4 | Source Address [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "4 | Source Address [2/2] : 69d6cv",
-      "5 | Source Coins : 101000 uatom",
+      "5 | Source Coins : 101000 anoah",
       "6 | Dest Address [1/2] : cosmos13dr26wdygna3s8fdl5tlc45m2le2ydyd",
       "6 | Dest Address [2/2] : gjk8ek",
-      "7 | Dest Coins : 1000 uatom",
+      "7 | Dest Coins : 1000 anoah",
       "8 | Dest Address [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "8 | Dest Address [2/2] : 69d6cv",
-      "9 | Dest Coins : 100000 uatom",
-      "10 | Fee : 0 uatom",
+      "9 | Dest Coins : 100000 anoah",
+      "10 | Fee : 0 anoah",
       "11 | Gas : 200000"
     ],
     "expert": true
@@ -1844,12 +1844,12 @@
     "name": "multisend_then_send",
     "tx": {
       "account_number": "8",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "2000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "100000"
@@ -1865,7 +1865,7 @@
                 "coins": [
                   {
                     "amount": "1",
-                    "denom": "uatom"
+                    "denom": "anoah"
                   }
                 ]
               }
@@ -1876,7 +1876,7 @@
                 "coins": [
                   {
                     "amount": "1",
-                    "denom": "uatom"
+                    "denom": "anoah"
                   }
                 ]
               }
@@ -1889,7 +1889,7 @@
             "amount": [
               {
                 "amount": "500000000",
-                "denom": "uatom"
+                "denom": "anoah"
               }
             ],
             "from_address": "cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p69d6cv",
@@ -1905,17 +1905,17 @@
       "0 | Type : Multi Send",
       "1 | Source Address [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "1 | Source Address [2/2] : 69d6cv",
-      "2 | Source Coins : 0.000001 ATOM",
+      "2 | Source Coins : 0.000000000000000001 NOAH",
       "3 | Dest Address [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "3 | Dest Address [2/2] : 69d6cv",
-      "4 | Dest Coins : 0.000001 ATOM",
+      "4 | Dest Coins : 0.000000000000000001 NOAH",
       "5 | Type : Send",
-      "6 | Amount : 500.000000 ATOM",
+      "6 | Amount : 0.0000000005 NOAH",
       "7 | From [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "7 | From [2/2] : 69d6cv",
       "8 | To [1/2] : cosmos13dr26wdygna3s8fdl5tlc45m2le2ydyd",
       "8 | To [2/2] : gjk8ek",
-      "9 | Fee : 0.002000 ATOM"
+      "9 | Fee : 0.000000000000002 NOAH"
     ],
     "expert": false
   },
@@ -1923,12 +1923,12 @@
     "name": "send_then_multisend",
     "tx": {
       "account_number": "8",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "2000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "100000"
@@ -1941,7 +1941,7 @@
             "amount": [
               {
                 "amount": "500000000",
-                "denom": "uatom"
+                "denom": "anoah"
               }
             ],
             "from_address": "cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p69d6cv",
@@ -1957,7 +1957,7 @@
                 "coins": [
                   {
                     "amount": "1",
-                    "denom": "uatom"
+                    "denom": "anoah"
                   }
                 ]
               }
@@ -1968,7 +1968,7 @@
                 "coins": [
                   {
                     "amount": "1",
-                    "denom": "uatom"
+                    "denom": "anoah"
                   }
                 ]
               }
@@ -1982,7 +1982,7 @@
     "validationErr": "No error",
     "expected": [
       "0 | Type : Send",
-      "1 | Amount : 500.000000 ATOM",
+      "1 | Amount : 0.0000000005 NOAH",
       "2 | From [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "2 | From [2/2] : 69d6cv",
       "3 | To [1/2] : cosmos13dr26wdygna3s8fdl5tlc45m2le2ydyd",
@@ -1990,11 +1990,11 @@
       "4 | Type : Multi Send",
       "5 | Source Address [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "5 | Source Address [2/2] : 69d6cv",
-      "6 | Source Coins : 0.000001 ATOM",
+      "6 | Source Coins : 0.000000000000000001 NOAH",
       "7 | Dest Address [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "7 | Dest Address [2/2] : 69d6cv",
-      "8 | Dest Coins : 0.000001 ATOM",
-      "9 | Fee : 0.002000 ATOM"
+      "8 | Dest Coins : 0.000000000000000001 NOAH",
+      "9 | Fee : 0.000000000000002 NOAH"
     ],
     "expert": false
   },
@@ -2002,12 +2002,12 @@
     "name": "multisend_x2_then_send",
     "tx": {
       "account_number": "8",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "2000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "100000"
@@ -2023,7 +2023,7 @@
                 "coins": [
                   {
                     "amount": "1",
-                    "denom": "uatom"
+                    "denom": "anoah"
                   }
                 ]
               }
@@ -2034,7 +2034,7 @@
                 "coins": [
                   {
                     "amount": "1",
-                    "denom": "uatom"
+                    "denom": "anoah"
                   }
                 ]
               }
@@ -2050,7 +2050,7 @@
                 "coins": [
                   {
                     "amount": "1",
-                    "denom": "uatom"
+                    "denom": "anoah"
                   }
                 ]
               }
@@ -2061,7 +2061,7 @@
                 "coins": [
                   {
                     "amount": "1",
-                    "denom": "uatom"
+                    "denom": "anoah"
                   }
                 ]
               }
@@ -2074,7 +2074,7 @@
             "amount": [
               {
                 "amount": "500000000",
-                "denom": "uatom"
+                "denom": "anoah"
               }
             ],
             "from_address": "cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p69d6cv",
@@ -2090,24 +2090,24 @@
       "0 | Type : Multi Send",
       "1 | Source Address [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "1 | Source Address [2/2] : 69d6cv",
-      "2 | Source Coins : 0.000001 ATOM",
+      "2 | Source Coins : 0.000000000000000001 NOAH",
       "3 | Dest Address [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "3 | Dest Address [2/2] : 69d6cv",
-      "4 | Dest Coins : 0.000001 ATOM",
+      "4 | Dest Coins : 0.000000000000000001 NOAH",
       "5 | Type : Multi Send",
       "6 | Source Address [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "6 | Source Address [2/2] : 69d6cv",
-      "7 | Source Coins : 0.000001 ATOM",
+      "7 | Source Coins : 0.000000000000000001 NOAH",
       "8 | Dest Address [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "8 | Dest Address [2/2] : 69d6cv",
-      "9 | Dest Coins : 0.000001 ATOM",
+      "9 | Dest Coins : 0.000000000000000001 NOAH",
       "10 | Type : Send",
-      "11 | Amount : 500.000000 ATOM",
+      "11 | Amount : 0.0000000005 NOAH",
       "12 | From [1/2] : cosmos1hr9x0sjvel6z3vt9qny8sdd5gnnlgk0p",
       "12 | From [2/2] : 69d6cv",
       "13 | To [1/2] : cosmos13dr26wdygna3s8fdl5tlc45m2le2ydyd",
       "13 | To [2/2] : gjk8ek",
-      "14 | Fee : 0.002000 ATOM"
+      "14 | Fee : 0.000000000000002 NOAH"
     ],
     "expert": false
   },
@@ -2153,12 +2153,12 @@
     "name": "ibc_denoms",
     "tx": {
       "account_number": "0",
-      "chain_id": "cosmoshub-4",
+      "chain_id": "ark-1",
       "fee": {
         "amount": [
           {
             "amount": "5",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "10000"
@@ -2195,7 +2195,7 @@
     "parsingErr": "No error",
     "validationErr": "No error",
     "expected": [
-      "0 | Chain ID : cosmoshub-4",
+      "0 | Chain ID : ark-1",
       "1 | Account : 0",
       "2 | Sequence : 1",
       "3 | Source Address : cosmosaccaddr1d9h8qat5e4ehc5",
@@ -2205,7 +2205,7 @@
       "6 | Dest Coins [1/2] : 10 ibc/27394FB092D2ECCD56123C74F36E4C1F",
       "6 | Dest Coins [2/2] : 926001CEADA9CA97EA622B25F41E5EB2",
       "7 | Memo : testmemo",
-      "8 | Fee : 5 uatom",
+      "8 | Fee : 5 anoah",
       "9 | Gas : 10000"
     ],
     "expert": true
@@ -2219,14 +2219,14 @@
         "amount": [
           {
             "amount": "2000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "100000",
         "granter": "cosmos1ulav3hsenupswqfkw2y3sup5kgtqwnvqa8eyhs",
         "payer": "cosmos1ulav3hsenupswqfkw2y3sup5kgtqwnvqa8eyhs"
       },
-      "memo": "\\u003e ⚛️\\u269B⚛️     ",
+      "memo": "\\u003e \u269b\ufe0f\\u269B\u269b\ufe0f     ",
       "msgs": [
         {
           "type": "cosmos-sdk/MsgExec",
@@ -2239,7 +2239,7 @@
                   "amount": [
                     {
                       "amount": "10000000",
-                      "denom": "uatom"
+                      "denom": "anoah"
                     }
                   ],
                   "from_address": "cosmos1ulav3hsenupswqfkw2y3sup5kgtqwnvqa8eyhs",
@@ -2265,7 +2265,7 @@
         "amount": [
           {
             "amount": "20000",
-            "denom": "uatom"
+            "denom": "anoah"
           },
           {
             "amount": "30000",
@@ -2286,7 +2286,7 @@
       "4 | msgs/value/grantee [2/2] : a8eyhs",
       "5 | msgs/value/msgs [1/6] : [{\"type\":\"cosmos-sdk/MsgSend\",\"value\":{",
       "5 | msgs/value/msgs [2/6] : \"amount\":[{\"amount\":\"10000000\",\"denom\":",
-      "5 | msgs/value/msgs [3/6] : \"uatom\"}],\"from_address\":\"cosmos1ulav3h",
+      "5 | msgs/value/msgs [3/6] : \"anoah\"}],\"from_address\":\"cosmos1ulav3h",
       "5 | msgs/value/msgs [4/6] : senupswqfkw2y3sup5kgtqwnvqa8eyhs\",\"to_a",
       "5 | msgs/value/msgs [5/6] : ddress\":\"cosmos1ejrf4cur2wy6kfurg9f2jpp",
       "5 | msgs/value/msgs [6/6] : p2h3afe5h6pkh5t\"}}]",
@@ -2310,13 +2310,13 @@
       "10 | Description [2/2] : a8eyhs",
       "11 | Memo [1/2] : \\\\u003e \\u269b\\ufe0f\\\\u269B\\u269b\\ufe0f",
       "11 | Memo [2/2] :     ",
-      "12 | Fee : 2000 uatom",
+      "12 | Fee : 2000 anoah",
       "13 | Gas : 100000",
       "14 | Granter [1/2] : cosmos1ulav3hsenupswqfkw2y3sup5kgtqwnvq",
       "14 | Granter [2/2] : a8eyhs",
       "15 | Payer [1/2] : cosmos1ulav3hsenupswqfkw2y3sup5kgtqwnvq",
       "15 | Payer [2/2] : a8eyhs",
-      "16 | Tip [1/2] : 20000 uatom",
+      "16 | Tip [1/2] : 20000 anoah",
       "16 | Tip [2/2] : 30000 uosmo",
       "17 | Tipper [1/2] : cosmos1ejrf4cur2wy6kfurg9f2jppp2h3afe5h",
       "17 | Tipper [2/2] : 6pkh5t",
@@ -2333,7 +2333,7 @@
         "amount": [
           {
             "amount": "5000",
-            "denom": "uatom"
+            "denom": "anoah"
           }
         ],
         "gas": "200000"
@@ -2373,7 +2373,7 @@
       "7 | Delegator [2/2] : 69d6cv",
       "8 | Validator [1/2] : cosmosvaloper13dr26wdygna3s8fdl5tlc45m2",
       "8 | Validator [2/2] : le2ydyddxzj49",
-      "9 | Fee : 5000 uatom",
+      "9 | Fee : 5000 anoah",
       "10 | Gas : 200000"
     ],
     "expert": true
@@ -2431,7 +2431,7 @@
       "fee": {
         "amount": [
           {
-            "denom": "uatom",
+            "denom": "anoah",
             "amount": "54"
           }
         ],
@@ -2446,7 +2446,7 @@
             "amount": [
               {
                 "amount": "255000000",
-                "denom": "uatom"
+                "denom": "anoah"
               }
             ],
             "depositor": "cosmos1849m9wncrqp6v4tkss6a3j8uzvuv0cp7wcgvqa",
@@ -2464,11 +2464,11 @@
       "1 | Account : 123",
       "2 | Sequence : 8",
       "3 | Type : Deposit",
-      "4 | Amount : 255000000 uatom",
+      "4 | Amount : 255000000 anoah",
       "5 | Sender [1/2] : cosmos1849m9wncrqp6v4tkss6a3j8uzvuv0cp7",
       "5 | Sender [2/2] : wcgvqa",
       "6 | Proposal ID : 44",
-      "7 | Fee : 54 uatom",
+      "7 | Fee : 54 anoah",
       "8 | Gas : 106309",
       "9 | Granter : cosmosaccaddr1d9h8xxxGRANTER",
       "10 | Payer : cosmosaccaddr1d9h8qatxxPAYER",
