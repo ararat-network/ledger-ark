@@ -16,7 +16,7 @@
 
 import Zemu from '@zondax/zemu'
 // @ts-ignore
-import CosmosApp from '@zondax/ledger-cosmos-js'
+import ArkApp from '@zondax/ledger-cosmos-js'
 import {
   defaultOptions,
   DEVICE_MODELS,
@@ -56,7 +56,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_basic), 'utf-8')
@@ -100,7 +100,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_basic), 'utf-8')
@@ -142,7 +142,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_basic), 'utf-8')
@@ -178,7 +178,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_basic2))
@@ -222,7 +222,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_basic))
@@ -266,7 +266,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(ibc_denoms))
@@ -310,7 +310,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(setWithdrawAddress))
@@ -354,7 +354,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(cliGovDeposit))
@@ -401,7 +401,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(example_tx_str_msgMultiSendAndSend))
@@ -445,7 +445,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       // Activate expert mode
       await sim.toggleExpertMode()
@@ -494,7 +494,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       // Activate expert mode
       await sim.toggleExpertMode()
@@ -541,7 +541,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       // The Ethereum-style 60' derivation was removed with the ETH address
       // support: the path is refused at extraction, before the HRP or any of
@@ -568,7 +568,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(babylonWrappedDelegate), 'utf-8')
@@ -612,7 +612,7 @@ describe('Amino', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(JSON.stringify(babylonWrappedUndelegate), 'utf-8')

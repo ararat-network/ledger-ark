@@ -15,7 +15,7 @@
  ******************************************************************************* */
 
 import Zemu, { zondaxMainmenuNavigation, ButtonKind, isTouchDevice } from '@zondax/zemu'
-import  CosmosApp  from '@zondax/ledger-cosmos-js'
+import ArkApp from '@zondax/ledger-cosmos-js'
 import { defaultOptions, DEVICE_MODELS } from './common'
 
 // @ts-ignore
@@ -48,7 +48,7 @@ describe('Standard', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
       const resp = await app.getVersion()
 
       console.log(resp)
@@ -65,7 +65,7 @@ describe('Standard', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       // Derivation path. First 3 items are automatically hardened!
       const path = "m/44'/330'/5'/0/3"
@@ -93,7 +93,7 @@ describe('Standard', function () {
         approveKeyword: isTouchDevice(m.name) ? 'Confirm' : '',
         approveAction: ButtonKind.DynamicTapButton,
       })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       // Derivation path. First 3 items are automatically hardened!
       const path = "m/44'/330'/5'/0/3"
@@ -120,9 +120,9 @@ describe('Standard', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
-      // Pre-2019 Terra wallets derived at the Cosmos coin type. The legacy
+      // Pre-2019 Terra wallets derived at coin type 118. The legacy
       // 118' path stays accepted so those holders can reach their accounts.
       const path = "m/44'/118'/0'/0/0"
       const resp = await app.getAddressAndPubKey(path, 'ark')
@@ -144,7 +144,7 @@ describe('Standard', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       // The app serves 330' and the legacy 118' only. The Ethereum-style 60'
       // derivation was removed with the ETH address support, so the path is
@@ -177,7 +177,7 @@ describe('Standard', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
 
@@ -231,7 +231,7 @@ describe('Standard', function () {
         approveKeyword: isTouchDevice(m.name) ? 'Confirm' : '',
         approveAction: ButtonKind.DynamicTapButton,
       })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       // Derivation path. First 3 items are automatically hardened!
       const path = "m/44'/330'/2147483647'/0/4294967295"
@@ -256,7 +256,7 @@ describe('Standard', function () {
         approveKeyword: isTouchDevice(m.name) ? 'Confirm' : '',
         approveAction: ButtonKind.DynamicTapButton,
       })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       // Activate expert mode
       await sim.toggleExpertMode();

@@ -16,7 +16,7 @@
 
 import Zemu from '@zondax/zemu'
 // @ts-ignore
-import CosmosApp from '@zondax/ledger-cosmos-js'
+import ArkApp from '@zondax/ledger-cosmos-js'
 import { defaultOptions, DEVICE_MODELS, tx_sign_textual, TEXTUAL_TX } from './common'
 // @ts-ignore
 import secp256k1 from 'secp256k1/elliptic'
@@ -42,7 +42,7 @@ describe('Textual', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       const path = "m/44'/330'/0'/0/0"
       const tx = Buffer.from(tx_sign_textual, 'hex')
@@ -86,7 +86,7 @@ describe('Textual', function () {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
-      const app = new CosmosApp(sim.getTransport())
+      const app = new ArkApp(sim.getTransport())
 
       // Change to expert mode so we can skip fields
       await sim.toggleExpertMode()
