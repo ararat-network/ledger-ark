@@ -25,7 +25,7 @@ extern "C" {
 #define HDPATH_0_DEFAULT (0x80000000u | 0x2cu)
 // 330 is the Terra coin type: Ark accounts continue Terra Classic keys.
 #define HDPATH_1_DEFAULT (0x80000000u | 0x14au)
-// Pre-2019 Terra wallets derived at the Cosmos coin type.
+// Pre-2019 Terra wallets derived at coin type 118.
 #define HDPATH_1_LEGACY (0x80000000u | 0x76u)
 #define HDPATH_2_DEFAULT (0x80000000u | 0u)
 #define HDPATH_3_DEFAULT (0u)
@@ -40,7 +40,7 @@ typedef enum {
 typedef enum { tx_json = 0, tx_textual } tx_type_e;
 
 typedef enum {
-  BECH32_COSMOS = 0,
+  BECH32_STANDARD = 0,
   UNSUPPORTED = 0xFF,
 } address_encoding_e;
 

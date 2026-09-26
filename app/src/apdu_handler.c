@@ -119,8 +119,8 @@ __Z_INLINE void extractHDPath(uint32_t rx, uint32_t offset) {
 
 static void extractHDPath_HRP(uint32_t rx, uint32_t offset) {
   extractHDPath(rx, offset);
-  // Set BECH32_COSMOS as default for backward compatibility
-  encoding = BECH32_COSMOS;
+  // Set BECH32_STANDARD as default for backward compatibility
+  encoding = BECH32_STANDARD;
 
   // Check if HRP was sent
   if ((rx - offset) > sizeof(uint32_t) * HDPATH_LEN_DEFAULT) {

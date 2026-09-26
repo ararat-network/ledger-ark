@@ -29,7 +29,7 @@ uint32_t hdPath[HDPATH_LEN_DEFAULT];
 
 uint8_t bech32_hrp_len;
 char bech32_hrp[MAX_BECH32_HRP_LEN + 1];
-address_encoding_e encoding = BECH32_COSMOS;
+address_encoding_e encoding = BECH32_STANDARD;
 
 #include "cx.h"
 
@@ -88,7 +88,7 @@ static zxerr_t crypto_hashBuffer(const uint8_t *input, const uint16_t inputLen,
                                  uint8_t *output, uint16_t outputLen) {
 
   switch (encoding) {
-  case BECH32_COSMOS: {
+  case BECH32_STANDARD: {
     cx_hash_sha256(input, inputLen, output, outputLen);
     break;
   }
@@ -168,7 +168,7 @@ zxerr_t crypto_fillAddress_helper(uint8_t *buffer, uint16_t buffer_len,
   uint8_t hashed1_pk[CX_SHA256_SIZE] = {0};
 
   switch (encoding) {
-  case BECH32_COSMOS: {
+  case BECH32_STANDARD: {
     // Hash it
     cx_hash_sha256(buffer, PK_LEN_SECP256K1, hashed1_pk, CX_SHA256_SIZE);
     uint8_t hashed2_pk[CX_RIPEMD160_SIZE] = {0};

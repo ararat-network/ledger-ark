@@ -30,7 +30,7 @@ zxerr_t addr_getNumItems(uint8_t *num_items) {
   zemu_log_stack("addr_getNumItems");
   *num_items = 1;
 
-  if (app_mode_expert() || encoding != BECH32_COSMOS) {
+  if (app_mode_expert() || encoding != BECH32_STANDARD) {
     zemu_log("num_items 2\n");
     *num_items = 2;
   } else {
@@ -57,7 +57,7 @@ zxerr_t addr_getItem(int8_t displayIdx, char *outKey, uint16_t outKeyLen,
     ZEMU_LOGF(200, "[addr_getItem] pageCount %d\n", *pageCount)
     return zxerr_ok;
   case 1: {
-    if (!app_mode_expert() && encoding == BECH32_COSMOS) {
+    if (!app_mode_expert() && encoding == BECH32_STANDARD) {
       return zxerr_no_data;
     }
 

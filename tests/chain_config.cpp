@@ -36,18 +36,18 @@ address_encoding_e check(uint32_t coinType, const char *hrp) {
 
 // The app serves exactly two derivation domains: 330' (the Terra coin type
 // Ark continues) and 118' (pre-2019 legacy Terra wallets). Both derive
-// standard Cosmos-style addresses.
+// standard sha256/ripemd160 bech32 addresses.
 TEST(ChainConfig, ArkHrpResolvesOnBothSupportedPaths) {
-  EXPECT_EQ(check(330, "ark"), BECH32_COSMOS);
-  EXPECT_EQ(check(118, "ark"), BECH32_COSMOS);
+  EXPECT_EQ(check(330, "ark"), BECH32_STANDARD);
+  EXPECT_EQ(check(118, "ark"), BECH32_STANDARD);
 }
 
 // There is no HRP table: any well-formed HRP is accepted on a supported path,
 // so wallets that re-encode the same key under another prefix keep working.
 TEST(ChainConfig, AnyWellFormedHrpResolvesOnSupportedPaths) {
-  for (const char *hrp : {"terra", "cosmos", "arkvaloper", "c4e", "e-money"}) {
-    EXPECT_EQ(check(330, hrp), BECH32_COSMOS) << hrp;
-    EXPECT_EQ(check(118, hrp), BECH32_COSMOS) << hrp;
+  for (const char *hrp : {"terra", "osmo", "arkvaloper", "c4e", "e-money"}) {
+    EXPECT_EQ(check(330, hrp), BECH32_STANDARD) << hrp;
+    EXPECT_EQ(check(118, hrp), BECH32_STANDARD) << hrp;
   }
 }
 
@@ -139,7 +139,7 @@ TEST(ChainConfig, LeadingNulIsRefused) {
 TEST(ChainConfig, ScanTerminatesAtTheMaximumDeclaredLength) {
   const std::string longHrp(255, 'a');
   EXPECT_EQ(checkChainConfig(0x80000000u | 330u, longHrp.c_str(), 255),
-            BECH32_COSMOS);
+            BECH32_STANDARD);
 
   std::string longHrpWithNul(255, 'a');
   longHrpWithNul[254] = '\0';

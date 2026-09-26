@@ -72,7 +72,7 @@ static const key_subst_t value_substitutions[] = {
     {"cosmos-sdk/MsgSetWithdrawAddress", "Withdraw Set Address"},
     {"cosmos-sdk/MsgMultiSend", "Multi Send"},
 
-    // Babylon x/epoching wrapped staking messages. Each nests a standard Cosmos
+    // Babylon x/epoching wrapped staking messages. Each nests a standard SDK
     // staking message under a "msg" key (see tx_msg_max_level); the action
     // shown is the wrapped staking action. Ledger Live emits the amino `type`
     // as the proto type URL (/babylon.epoching.v1.MsgWrapped*); the chain's
