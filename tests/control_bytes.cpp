@@ -29,11 +29,11 @@
 namespace {
 
 std::string signdoc(const std::string &memo) {
-  return R"({"account_number":"8","chain_id":"cosmoshub-4",)"
-         R"("fee":{"amount":[{"amount":"5000","denom":"uatom"}],"gas":"200000"},)"
+  return R"({"account_number":"8","chain_id":"ararathub-4",)"
+         R"("fee":{"amount":[{"amount":"5000","denom":"anoah"}],"gas":"200000"},)"
          R"("memo":")" + memo + R"(","msgs":[{"type":"cosmos-sdk/MsgSend","value":{)"
-         R"("amount":[{"amount":"10","denom":"uatom"}],)"
-         R"("from_address":"cosmos1from","to_address":"cosmos1to"}}],"sequence":"1"})";
+         R"("amount":[{"amount":"10","denom":"anoah"}],)"
+         R"("from_address":"ararat1from","to_address":"ararat1to"}}],"sequence":"1"})";
 }
 
 parser_error_t parse(const std::string &tx) {
@@ -107,5 +107,5 @@ TEST(ControlBytes, NewlineFloodedMemoIsRejected) {
 // are legal UTF-8 and legal JSON, and still render verbatim on the JSON path.
 // Recorded so the gap is not mistaken for covered.
 TEST(ControlBytes, DISABLED_LookalikeCharactersAreStillAccepted) {
-  EXPECT_EQ(parse(signdoc("cosmos1‮reversed")), parser_ok);
+  EXPECT_EQ(parse(signdoc("ararat1‮reversed")), parser_ok);
 }

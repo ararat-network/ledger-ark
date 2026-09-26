@@ -33,8 +33,8 @@ namespace {
 
 std::string staking_msg(const std::string &type, const std::string &validator) {
   return R"({"type":")" + type + R"(","value":{)"
-         R"("amount":{"amount":"1000000","denom":"uatom"},)"
-         R"("delegator_address":"cosmos1delegator",)"
+         R"("amount":{"amount":"1000000","denom":"anoah"},)"
+         R"("delegator_address":"ararat1delegator",)"
          R"("validator_address":")" + validator + R"("}})";
 }
 
@@ -46,8 +46,8 @@ std::string signdoc(const std::vector<std::string> &msgs) {
     }
     joined += msgs[i];
   }
-  return R"({"account_number":"8","chain_id":"cosmoshub-4",)"
-         R"("fee":{"amount":[{"amount":"5000","denom":"uatom"}],"gas":"200000"},)"
+  return R"({"account_number":"8","chain_id":"ararathub-4",)"
+         R"("fee":{"amount":[{"amount":"5000","denom":"anoah"}],"gas":"200000"},)"
          R"("memo":"","msgs":[)" + joined + R"(],"sequence":"1"})";
 }
 
@@ -103,9 +103,9 @@ TEST(Grouping, IdenticalTypesStillCollapseToOneScreen) {
   app_mode_set_expert(false);
 
   const auto ui = render(signdoc({
-      staking_msg("cosmos-sdk/MsgDelegate", "cosmosvaloper1aaa"),
-      staking_msg("cosmos-sdk/MsgDelegate", "cosmosvaloper1bbb"),
-      staking_msg("cosmos-sdk/MsgDelegate", "cosmosvaloper1ccc"),
+      staking_msg("cosmos-sdk/MsgDelegate", "araratvaloper1aaa"),
+      staking_msg("cosmos-sdk/MsgDelegate", "araratvaloper1bbb"),
+      staking_msg("cosmos-sdk/MsgDelegate", "araratvaloper1ccc"),
   }));
 
   ASSERT_FALSE(ui.empty());
@@ -122,8 +122,8 @@ TEST(Grouping, TypesSharingALabelDoNotCollapse) {
   app_mode_set_expert(false);
 
   const auto ui = render(signdoc({
-      staking_msg("cosmos-sdk/MsgDelegate", "cosmosvaloper1honest"),
-      staking_msg("/babylon.epoching.v1.MsgWrappedDelegate", "cosmosvaloper1other"),
+      staking_msg("cosmos-sdk/MsgDelegate", "araratvaloper1honest"),
+      staking_msg("/babylon.epoching.v1.MsgWrappedDelegate", "araratvaloper1other"),
   }));
 
   ASSERT_FALSE(ui.empty());
@@ -135,8 +135,8 @@ TEST(Grouping, LegacyAndProtoSpellingsOfTheSameTypeDoNotCollapse) {
   app_mode_set_expert(false);
 
   const auto ui = render(signdoc({
-      staking_msg("epoching/WrappedDelegate", "cosmosvaloper1honest"),
-      staking_msg("/babylon.epoching.v1.MsgWrappedDelegate", "cosmosvaloper1other"),
+      staking_msg("epoching/WrappedDelegate", "araratvaloper1honest"),
+      staking_msg("/babylon.epoching.v1.MsgWrappedDelegate", "araratvaloper1other"),
   }));
 
   ASSERT_FALSE(ui.empty());
@@ -147,8 +147,8 @@ TEST(Grouping, DistinctTypesWithDistinctLabelsStillDoNotCollapse) {
   app_mode_set_expert(false);
 
   const auto ui = render(signdoc({
-      staking_msg("cosmos-sdk/MsgDelegate", "cosmosvaloper1aaa"),
-      staking_msg("cosmos-sdk/MsgUndelegate", "cosmosvaloper1bbb"),
+      staking_msg("cosmos-sdk/MsgDelegate", "araratvaloper1aaa"),
+      staking_msg("cosmos-sdk/MsgUndelegate", "araratvaloper1bbb"),
   }));
 
   ASSERT_FALSE(ui.empty());

@@ -402,10 +402,10 @@ TEST(CborTextualRender, IndentThatOverflowsAnUntitledValueEndsTheRequest) {
 }
 
 TEST(CborTextualRender, ModestIndentRendersNormally) {
-  const auto blob = envelope({indented_screen("Amount", "10 ATOM", 2)});
+  const auto blob = envelope({indented_screen("Amount", "10 NOAH", 2)});
   const auto rendered = render_textual(blob, 0);
 
   EXPECT_EQ(rendered.err, parser_ok);
   EXPECT_EQ(rendered.key, ">>Amount");
-  EXPECT_EQ(rendered.value, "10 ATOM");
+  EXPECT_EQ(rendered.value, "10 NOAH");
 }

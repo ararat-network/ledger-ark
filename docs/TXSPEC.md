@@ -127,8 +127,8 @@ Public key: cosmos.crypto.secp256k1.PubKey
 >> Key: Auvdf+T963bciiBe9l15DNMOijdaXCUo6zqSOvH7TXlN
 Transaction: 1 Messages
 > Message (1/1): cosmos.bank.v1beta1.MsgSend
-> From address: cosmos1ulav3hsenupswqfkw2y3sup5kgtqwnvqa8eyhs
-> To address: cosmos1ejrf4cur2wy6kfurg9f2jppp2h3afe5h6pkh5t
+> From address: ararat1ulav3hsenupswqfkw2y3sup5kgtqwnvqa8eyhs
+> To address: ararat1ejrf4cur2wy6kfurg9f2jppp2h3afe5h6pkh5t
 > Amount: 10 NOAH
 End of Messages
 Fees: 0.002 anoah
@@ -147,8 +147,8 @@ CBOR Envelope
     {1: "Key: Auvdf+T963bciiBe9l15DNMOijdaXCUo6zqSOvH7TXlN", 2: 2, 3: true},
     {1: "Transaction: 1 Messages"},
     {1: "Message (1/1): cosmos.bank.v1beta1.MsgSend", 2: 1},
-    {1: "From address: cosmos1ulav3hsenupswqfkw2y3sup5kgtqwnvqa8eyhs", 2: 1},
-    {1: "To address: cosmos1ejrf4cur2wy6kfurg9f2jppp2h3afe5h6pkh5t", 2: 1},
+    {1: "From address: ararat1ulav3hsenupswqfkw2y3sup5kgtqwnvqa8eyhs", 2: 1},
+    {1: "To address: ararat1ejrf4cur2wy6kfurg9f2jppp2h3afe5h6pkh5t", 2: 1},
     {1: "Amount: 10 NOAH", 2: 1},
     {1: "End of Messages"},
     {1: "Fees: 0.002 anoah"},

@@ -30,11 +30,11 @@
 namespace {
 
 std::string send_msg(const std::string &to, const std::string &memo) {
-  return R"({"account_number":"8","chain_id":"cosmoshub-4",)"
-         R"("fee":{"amount":[{"amount":"5000","denom":"uatom"}],"gas":"200000"},)"
+  return R"({"account_number":"8","chain_id":"ararathub-4",)"
+         R"("fee":{"amount":[{"amount":"5000","denom":"anoah"}],"gas":"200000"},)"
          R"("memo":")" + memo + R"(","msgs":[{"type":"cosmos-sdk/MsgSend","value":{)"
-         R"("amount":[{"amount":"10","denom":"uatom"}],)"
-         R"("from_address":"cosmos1from","to_address":")" + to + R"("}}],"sequence":"1"})";
+         R"("amount":[{"amount":"10","denom":"anoah"}],)"
+         R"("from_address":"ararat1from","to_address":")" + to + R"("}}],"sequence":"1"})";
 }
 
 std::vector<std::string> render(const std::string &tx) {
@@ -79,7 +79,7 @@ std::string value_of(const std::vector<std::string> &ui, const std::string &key)
 // The behaviour the table exists for.
 TEST(Substitution, MessageTypeIsStillRenderedAsAnActionWord) {
   app_mode_set_expert(false);
-  const auto ui = render(send_msg("cosmos1to", "hello"));
+  const auto ui = render(send_msg("ararat1to", "hello"));
 
   ASSERT_FALSE(ui.empty());
   EXPECT_EQ(value_of(ui, "Type"), "Send");
@@ -98,7 +98,7 @@ TEST(Substitution, RecipientMatchingATypeNameIsRenderedVerbatim) {
 
 TEST(Substitution, MemoMatchingATypeNameIsRenderedVerbatim) {
   app_mode_set_expert(false);
-  const auto ui = render(send_msg("cosmos1to", "cosmos-sdk/MsgSend"));
+  const auto ui = render(send_msg("ararat1to", "cosmos-sdk/MsgSend"));
 
   ASSERT_FALSE(ui.empty());
   EXPECT_EQ(value_of(ui, "Memo"), "cosmos-sdk/MsgSend");
@@ -106,10 +106,10 @@ TEST(Substitution, MemoMatchingATypeNameIsRenderedVerbatim) {
 
 TEST(Substitution, OrdinaryValuesAreUnaffected) {
   app_mode_set_expert(false);
-  const auto ui = render(send_msg("cosmos1to", "hello"));
+  const auto ui = render(send_msg("ararat1to", "hello"));
 
   ASSERT_FALSE(ui.empty());
-  EXPECT_EQ(value_of(ui, "To"), "cosmos1to");
+  EXPECT_EQ(value_of(ui, "To"), "ararat1to");
   EXPECT_EQ(value_of(ui, "Memo"), "hello");
-  EXPECT_EQ(value_of(ui, "From"), "cosmos1from");
+  EXPECT_EQ(value_of(ui, "From"), "ararat1from");
 }

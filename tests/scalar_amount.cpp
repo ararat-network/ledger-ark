@@ -34,13 +34,13 @@
 namespace {
 
 std::string with_amount(const std::string &amount_json) {
-  return R"({"account_number":"8","chain_id":"cosmoshub-4",)"
-         R"("fee":{"amount":[{"amount":"5000","denom":"uatom"}],"gas":"200000"},)"
+  return R"({"account_number":"8","chain_id":"ararathub-4",)"
+         R"("fee":{"amount":[{"amount":"5000","denom":"anoah"}],"gas":"200000"},)"
          R"("memo":"","msgs":[{"type":"cosmos/evm/MsgConvertERC20","value":{)"
          R"("amount":)" +
          amount_json +
          R"(,"contract_address":"0x0000000000000000000000000000000000000042",)"
-         R"("receiver":"cosmos1receiver","sender":"cosmos1sender"}}],)"
+         R"("receiver":"ararat1receiver","sender":"ararat1sender"}}],)"
          R"("sequence":"1"})";
 }
 

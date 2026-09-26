@@ -37,11 +37,11 @@ std::string batch(size_t messages) {
     }
     const std::string n = std::to_string(100000 + i);
     msgs += R"({"type":"cosmos-sdk/MsgWithdrawDelegationReward","value":{)"
-            R"("delegator_address":"cosmos1delegator)" + n + R"(",)"
-            R"("validator_address":"cosmosvaloper1validator)" + n + R"("}})";
+            R"("delegator_address":"ararat1delegator)" + n + R"(",)"
+            R"("validator_address":"araratvaloper1validator)" + n + R"("}})";
   }
-  return R"({"account_number":"8","chain_id":"cosmoshub-4",)"
-         R"("fee":{"amount":[{"amount":"5000","denom":"uatom"}],"gas":"200000"},)"
+  return R"({"account_number":"8","chain_id":"ararathub-4",)"
+         R"("fee":{"amount":[{"amount":"5000","denom":"anoah"}],"gas":"200000"},)"
          R"("memo":"","msgs":[)" + msgs + R"(],"sequence":"1"})";
 }
 

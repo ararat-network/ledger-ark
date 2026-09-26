@@ -47,11 +47,11 @@ std::string coin_array(size_t coins) {
 }
 
 std::string document(size_t coins) {
-  return R"({"account_number":"8","chain_id":"cosmoshub-4",)"
+  return R"({"account_number":"8","chain_id":"ararathub-4",)"
          R"("fee":{"amount":)" +
          coin_array(coins) + R"(,"gas":"200000"},)" +
          R"("memo":"","msgs":[{"type":"cosmos-sdk/MsgSend","value":{)"
-         R"("from_address":"cosmos1from","to_address":"cosmos1to"}}],)"
+         R"("from_address":"ararat1from","to_address":"ararat1to"}}],)"
          R"("sequence":"1"})";
 }
 
