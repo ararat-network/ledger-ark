@@ -1,4 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 4 256 256">
-  <polygon points="128,20 208,108 48,108"/>
-  <path d="M16 132 H240 A112 112 0 0 1 16 132 Z"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <path d="M128 18L208 98L48 98Z"/>
+  <path d="M16 110H48L128 190L208 110H240A112 112 0 0 1 16 110Z"/>
 </svg>
