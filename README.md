@@ -4,10 +4,10 @@
 
 ---
 
-![zondax_light](docs/zondax_light.png#gh-light-mode-only)
-![zondax_dark](docs/zondax_dark.png#gh-dark-mode-only)
-
-_Please visit our website at [zondax.ch](zondax.ch)_
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/ark_dark.svg">
+  <img src="docs/ark_light.svg" alt="Ark" width="280">
+</picture>
 
 This project contains the Ark app for Ledger Nano S+, X, Stax, Flex and Apex P.
 
