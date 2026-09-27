@@ -1,13 +1,12 @@
-# Ledger Ark app
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![GithubActions](https://github.com/ararat-network/ledger-ark/actions/workflows/main.yml/badge.svg)](https://github.com/ararat-network/ledger-ark/blob/main/.github/workflows/main.yml)
-
----
-
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="docs/ark_dark.svg">
   <img src="docs/ark_light.svg" alt="Ark" width="280">
 </picture>
+
+# Ledger Ark app
+
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+[![GithubActions](https://github.com/ararat-network/ledger-ark/actions/workflows/main.yml/badge.svg)](https://github.com/ararat-network/ledger-ark/blob/main/.github/workflows/main.yml)
 
 This project contains the Ark app for Ledger Nano S+, X, Stax, Flex and Apex P.
 
@@ -16,7 +15,7 @@ Ark chain: derivation on the Terra coin type 330' (with 118' kept for legacy Ter
 bech32 prefix, `ark-1` as the default chain id, and NOAH denomination display. The Ethereum-style 60'
 path and the Ledger Live swap integration were removed.
 
-- Ledger Nano S+/X/Stax/Flex Apex P Ark app
+- Ledger Nano S+/X/Stax/Flex/Apex P Ark app
 - Specs / Documentation
 - C++ unit tests
 - Zemu tests
