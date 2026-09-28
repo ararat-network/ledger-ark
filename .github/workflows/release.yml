@@ -1,0 +1,66 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions: {}
+
+jobs:
+  package:
+    name: Package installers
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Check the tag matches the app version
+        run: |
+          . app/Makefile.version
+          version="v${APPVERSION_M}.${APPVERSION_N}.${APPVERSION_P}"
+          if [ "$GITHUB_REF_NAME" != "$version" ]; then
+            echo "::error::tag $GITHUB_REF_NAME does not match app version $version"
+            exit 1
+          fi
+      - name: Build demo installers
+        run: make PRODUCTION_BUILD=0
+      # Nano X cannot sideload, so it gets no installer.
+      - name: Collect installers
+        run: |
+          mkdir dist
+          cp app/pkg/installer_s2.sh dist/installer_nanos_plus.sh
+          cp app/pkg/installer_stax.sh app/pkg/installer_flex.sh app/pkg/installer_apex_p.sh dist/
+          cd dist && sha256sum installer_*.sh > SHA256SUMS
+      - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: release
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    name: Publish release
+    needs: package
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          name: release
+          path: dist
+      # Attach every asset to a draft before publishing: immutable releases lock assets on publish.
+      - name: Publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$TAG" dist/* --draft --verify-tag --title "$TAG" --generate-notes \
+            --notes "Demo builds for sideloading: the app's home screen reads DO NOT USE. Check downloads against SHA256SUMS."
+          gh release edit "$TAG" --draft=false

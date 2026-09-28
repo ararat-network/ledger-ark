@@ -1,4 +1,5 @@
 name: Build
+
 on:
   workflow_dispatch:
   push:
@@ -9,13 +10,57 @@ on:
       - master
       - dev
 
+# CI only: release.yml cuts releases from v* tags.
+permissions:
+  contents: read
+
 jobs:
-  ledger-build:
-    uses: Zondax/_workflows/.github/workflows/_ledger_main.yml@v3
-    with:
-      runs-on: ${{ github.repository_owner == 'zondax' && 'zondax-runners' || 'ubuntu-latest' }}
-      has-rust: false
-      has-nanos: false
-      node-version: '22'
-    permissions:                                                            
-        contents: write  # Required for creating releases   
+  cpp_test:
+    name: C++ unit tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - uses: jdx/mise-action@c2a87611a18de5b3828c5652fe268e992400cb5c # v4.3.0
+        with:
+          version: 2026.4.3
+          install: true
+          cache: false
+          cache_save: false
+          tool_versions: |
+            cmake 3.28.0
+          reshim: true
+      - run: make cpp_test
+
+  test_zemu:
+    name: Zemu tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y curl protobuf-compiler build-essential git python3 python3-pip \
+            libusb-1.0-0 libudev-dev
+          sudo update-alternatives --install /usr/bin/python python /usr/bin/python3 10
+          sudo update-alternatives --install /usr/bin/pip pip /usr/bin/pip3 10
+      - uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: "22"
+      # pnpm is pinned in zxlib's dockerized_build.mk; the zemu test script calls yarn.
+      - run: corepack enable
+      - name: Build and run zemu tests
+        run: make test_all
+      - name: Upload snapshots on failure
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: snapshots-tmp
+          path: tests_zemu/snapshots-tmp/
