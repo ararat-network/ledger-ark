@@ -12,6 +12,6 @@ on:
 
 jobs:
   ledger-lint:
-    uses: Zondax/_workflows/.github/workflows/_ledger_lint.yml@v3
+    uses: Zondax/_workflows/.github/workflows/_ledger_lint.yml@6d3659c47642b775a86636ae5bedb2da8a1e6f8c # v3
     with:
       runs-on: ${{ github.repository_owner == 'zondax' && 'zondax-runners' || 'ubuntu-latest' }}
