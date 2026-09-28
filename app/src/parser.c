@@ -646,7 +646,9 @@ __Z_INLINE parser_error_t parser_getJsonItem(const parser_context_t *ctx,
   }
 
   *pageCount = 0;
-  char tmpKey[QUERY_KEY_BUFFER_SIZE] = {0};
+  // Static: tx_display_query keeps a pointer to it in the query context.
+  static char tmpKey[QUERY_KEY_BUFFER_SIZE];
+  MEMZERO(tmpKey, sizeof(tmpKey));
 
   MEMZERO(outKey, outKeyLen);
   MEMZERO(outVal, outValLen);

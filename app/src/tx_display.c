@@ -116,8 +116,9 @@ __Z_INLINE parser_error_t calculate_is_default_chainid() {
   display_cache.is_default_chain = false;
 
   // get chain_id
-  char outKey[2];
-  char outVal[COIN_MAX_CHAINID_LEN];
+  // Static: the query context keeps pointers to these after return.
+  static char outKey[2];
+  static char outVal[COIN_MAX_CHAINID_LEN];
   uint8_t pageCount;
   INIT_QUERY_CONTEXT(outKey, sizeof(outKey), outVal, sizeof(outVal), 0,
                      get_root_max_level(root_item_chain_id))
@@ -216,8 +217,9 @@ parser_error_t tx_indexRootFields() {
   // Clear cache
   MEMZERO(&display_cache, sizeof(display_cache_t));
 
-  char tmp_key[INDEXING_TMP_KEYSIZE];
-  char tmp_val[INDEXING_TMP_VALUESIZE];
+  // Static: the query context keeps pointers to these after return.
+  static char tmp_key[INDEXING_TMP_KEYSIZE];
+  static char tmp_val[INDEXING_TMP_VALUESIZE];
   MEMZERO(&tmp_key, sizeof(tmp_key));
   MEMZERO(&tmp_val, sizeof(tmp_val));
 
