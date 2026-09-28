@@ -1,5 +1,9 @@
 overrides:
-  axios: ^1.7.9
+  axios: ^1.18.0
+  # dockerode 4 pins uuid ^10; 11.1.1 is the first fixed release that still ships CommonJS.
+  uuid: ^11.1.1
+  # @ledgerhq/hw-transport-http pins ws to exactly 8.18.3.
+  ws: ^8.21.0
 
 allowBuilds:
   cpu-features: false
