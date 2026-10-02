@@ -2,7 +2,10 @@ name: Reusable build
 
 on:
   workflow_dispatch:
+  # main only: on other branches the pull_request run already covers each push.
   push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
