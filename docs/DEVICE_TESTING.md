@@ -67,7 +67,7 @@ import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
 import ArkApp from "@zondax/ledger-cosmos-js";
 
 async function main() {
-  const app = new ArkApp(await TransportNodeHid.default.create());
+  const app = new ArkApp(await TransportNodeHid.create());
 
   console.log("version:", await app.getVersion());
 
@@ -138,8 +138,9 @@ cd ../ark && build/arkd start --home ~/.ark-devnet/node0/arkd
 
 ### Register the device key and fund it
 
-With the Ark app open on the device (run against a second terminal; `NODE` is the
-devnet RPC, `--home` the node0 dir as above):
+With the Ark app open on the device, run these from a second terminal. `--home` is
+node0's directory, whose `client.toml` (written by `init-files`) points at the devnet's
+RPC:
 
 ```bash
 build/arkd keys add flex --ledger --keyring-backend test --home ~/.ark-devnet/node0/arkd
@@ -180,11 +181,23 @@ funded `flex` account, walk the user-signable surface (discover exact arguments 
 `tx <module> --help`; every command takes the stage-2 flags including
 `--sign-mode amino-json`):
 
-- [ ] `tx market ...` — a swap between `anoah` and a stablecoin denom. The Type screen
-      must show the short amino name, and offer/ask fields must render.
-- [ ] `tx claims ...` and any other user-facing module msgs the launch exposes.
-- [ ] A wasm execute against the grant contract (`tx wasm execute`): the JSON msg body
-      renders as paginated screens — confirm it stays readable, not garbage.
+- [ ] `tx market ...` — every order a trader signs (`tx market --help`), between
+      `anoah` and a stablecoin denom. The Type screen must show the short amino name,
+      and the offer and ask fields, bound included, must render.
+- [ ] `tx disbursement release` with one or two grant IDs, the one disbursement msg an
+      ordinary account signs: the ID list must render. Without grants on the devnet it
+      fails on chain, which does not matter here; the review is what is under test.
+- [ ] A wasm execute (`tx wasm execute`): store and instantiate the chain repo's
+      `tests/e2e/testdata/counter.wasm` (`{"count":0}`), then execute
+      `{"increment":{}}`. The JSON msg body renders as paginated screens — confirm it
+      stays readable, not garbage. A cw3 committee's members sign exactly this shape.
+- [ ] A multisig member's signature, which is how a multisig committee signs: `keys add
+      com --multisig flex,node0 --multisig-threshold 2`, fund `com`, write a
+      `tx bank send com ... --generate-only` to `tx.json`, sign it with
+      `tx sign tx.json --multisig com --from flex` (and again `--from node0`), then
+      `tx multisign tx.json com flex.json node0.json` and `tx broadcast`. The review
+      must show `com` as the sender, since it is not the device's own address, and the
+      combined transaction must land.
 - [ ] One deliberately large transaction — a `gov submit-proposal` with a long
       description or a wasm execute with a sizeable payload. Either it reviews cleanly
       or it fails with the explicit "Transaction is too big" error. Truncated or

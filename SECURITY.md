@@ -26,5 +26,5 @@ cannot be hot-patched on users' devices.
 ## Scope
 
 This repository's application code (`app/src/`). Issues in the Ledger OS or
-SDK belong to Ledger's own program; issues in the ark chain belong to the
-chain repository's policy.
+SDK belong to Ledger's own program; issues in the Ark chain belong to the
+[chain repository's policy](https://github.com/ararat-network/ark/blob/main/SECURITY.md).

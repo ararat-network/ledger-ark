@@ -35,11 +35,12 @@ Tip:
 ## Download and install a prerelease
 
 *Once the app is approved by Ledger, it will be available in their app store (Ledger Live).
-Until then, [releases](https://github.com/ararat-network/ledger-ark/releases) carry demo builds cut from `v*` tags;
-the app's home screen reads DO NOT USE. THESE ARE UNVETTED DEVELOPMENT RELEASES*
+Until then, each `v*` tag publishes a [release](https://github.com/ararat-network/ledger-ark/releases) with demo
+builds; the app's home screen reads DO NOT USE. THESE ARE UNVETTED DEVELOPMENT RELEASES*
 
 Download the installer for your device (`installer_nanos_plus.sh`, `installer_stax.sh`, `installer_flex.sh` or
-`installer_apex_p.sh`) together with `SHA256SUMS`, check it, and load it:
+`installer_apex_p.sh`; the Nano X cannot sideload) together with `SHA256SUMS`, check it, and load it. The
+installers need `ledgerblue` (see [Preconditions](#preconditions)):
 
 ```sh
 sha256sum --check --ignore-missing SHA256SUMS
@@ -57,25 +58,22 @@ chmod +x ./installer_nanos_plus.sh
     git submodule update --init --recursive
     ```
 
-- Install Docker CE
+- Install Docker CE. Device builds run in Zondax's builder image and use the Ledger SDKs it ships.
     - Instructions can be found here: https://docs.docker.com/install/
 
-- We only officially support Ubuntu. Install the following packages:
+- CI runs on Ubuntu, which needs:
    ```
-   sudo apt update && apt-get -y install build-essential git wget cmake \
-  libssl-dev libgmp-dev autoconf libtool
+   sudo apt-get update && sudo apt-get -y install build-essential git cmake python3 python3-pip python-is-python3 libusb-1.0-0 libudev-dev
    ```
 
-- Install `node > v13.0`. We typically recommend using `n`
+- Install Node 20.19 or later (CI uses 22) and run `corepack enable`: the Zemu targets fetch their pinned pnpm
+  through corepack.
 
-- You will need python 3 and then run
+- With Python 3 as `python`, run
     - `make deps`
 
-- This project requires Ledger firmware 2.0
-    - The current repository keeps track of Ledger's SDK but it is possible to override it by changing the git submodule.
-
-*Warning*: Some IDEs may not use the same python interpreter or virtual environment as the one you used when running `pip`.
-If you see conan is not found, check that you installed the package in the same interpreter as the one that launches `cmake`.
+*Warning*: `make deps` installs `ledgerblue` with whichever `pip` is on your `PATH`, while the installers run
+`python3 -m ledgerblue`. If an installer reports that ledgerblue is missing, the two point at different interpreters.
 
 ## How to build ?
 
@@ -89,14 +87,9 @@ If you see conan is not found, check that you installed the package in the same 
     make
     ```
 
+    This builds every device target, leaving the ELFs in `app/output/` and the installers in `app/pkg/`.
+
 ## Running tests
-
-- Running rust tests (x64)
-
-    If you installed the what is described above, just run:
-    ```bash
-    make rust_test
-    ```
 
 - Running C/C++ tests (x64)
 
@@ -113,12 +106,8 @@ If you see conan is not found, check that you installed the package in the same 
 
 ## How to test with Zemu?
 
-> What is Zemu?? Great you asked!!
-> As part of this project, we are making public a beta version of our internal testing+emulation framework for Ledger apps.
->
-> Npm Package here: https://www.npmjs.com/package/@zondax/zemu
->
-> Repo here: https://github.com/Zondax/zemu
+> [Zemu](https://github.com/Zondax/zemu) ([npm](https://www.npmjs.com/package/@zondax/zemu)) is Zondax's
+> emulation and testing framework for Ledger apps.
 
 Let's go! First install everything:
 > At this moment, if you change the app you will need to run `make` before running the test again.
@@ -133,80 +122,35 @@ Then you can run JS tests:
 make zemu_test
 ```
 
-To run a single specific test:
+`make test_all` does all three steps, as CI does. To run a single test, pass its name to jest:
 
-> At the moment, the recommendation is to run from the IDE. Remember to run `make` if you change the app.
+```bash
+cd tests_zemu && corepack pnpm exec jest -t 'get address'
+```
 
 ## Using a real device
 
-### How to prepare your DEVELOPMENT! device:
-
->  You can use an emulated device for development. This is only required if you are using a physical device
+> **Please do not use a Ledger device with funds for development purposes.**
 >
->    **Please do not use a Ledger device with funds for development purposes.**
->>
->    **Have a separate and marked device that is used ONLY for development and testing**
+> **Have a separate and marked device that is used ONLY for development and testing**
 
-   There are a few additional steps that increase reproducibility and simplify development:
+[docs/DEVICE_TESTING.md](docs/DEVICE_TESTING.md) walks through sideloading the app and verifying it on hardware,
+end to end against a local Ark chain. On Linux hosts the device may need udev rules first: see Ledger's
+[connection guide](https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues).
 
-**1 - Ensure your device works in your OS**
-- In Linux hosts it might be necessary to adjust udev rules, etc.
+To load a local build, run `make`, then the installer for your device. _Warning: the installer deletes the
+installed app before loading._
 
-  Refer to Ledger documentation: https://support.ledger.com/hc/en-us/articles/115005165269-Fix-connection-issues
+```
+make loadS2                           # Nano S+
+make loadST                           # Stax
+make loadFL                           # Flex
+./app/pkg/installer_apex_p.sh load    # Apex P (zxlib's loadAP looks for installer_apex.sh)
+```
 
-**2 - Set a test mnemonic**
-
-Many of our integration tests expect the device to be configured with a known test mnemonic.
-
-- Plug your device while pressing the right button
-
-- Your device will show "Recovery" in the screen
-
-- Double click
-
-- Run `make dev_init`. This will take about 2 minutes. The device will be initialized to:
-
-   ```
-   PIN: 5555
-   Mnemonic: equip will roof matter pink blind book anxiety banner elbow sun young
-   ```
-
-**3 - Add a development certificate**
-
-- Plug your device while pressing the right button
-
-- Your device will show "Recovery" in the screen
-
-- Click both buttons at the same time
-
-- Enter your pin if necessary
-
-- Run `make dev_ca`. The device will receive a development certificate to avoid constant manual confirmations.
-
-
-### Loading into your development device
-
-The Makefile will build the firmware in a docker container and leave the binary in the correct directory.
-
-- Build
-
-   ```
-   make                # Builds the app
-   ```
-
-- Upload to a device
-   The following command will upload the application to the ledger. _Warning: The application will be deleted before uploading._
-   ```
-   make loadS2        # Builds and loads the app to the device (Nano S+)
-   make loadST        # Builds and loads the app to the device (Nano Stax)
-   make loadFL        # Builds and loads the app to the device (Nano Flex)
-   make loadAP        # Builds and loads the app to the device (Nano Apex P)
-   ```
-
-## APDU Specifications
-
-### DISCLAIMER
-Ledger NanoS does not support Textual Mode due to memory restriction
+## Documentation
 
 - [APDU Protocol](docs/APDUSPEC.md)
 - [Transaction format](docs/TXSPEC.md)
+- [Hardware verification](docs/DEVICE_TESTING.md)
+- [Security policy](SECURITY.md)
