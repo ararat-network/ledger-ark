@@ -2,16 +2,17 @@ name: "CodeQL"
 
 on:
   workflow_dispatch:
+  # main only: on other branches the pull_request run already covers each push.
   push:
+    branches:
+      - main
   pull_request:
     branches:
       - main
       - develop
       - master
       - dev
-    paths-ignore:
-      - '.github/workflows/*.yml'
-      - 'tests/*'
+    # No path filter: the code scanning ruleset needs an analysis on every pull request.
 
 # These must cover every scope the called workflow declares, otherwise the run is
 # rejected at startup. github/codeql-action queries the workflow run, so
