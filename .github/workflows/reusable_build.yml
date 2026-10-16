@@ -17,6 +17,7 @@ permissions:
   actions: write
   contents: read
   pull-requests: write
+  packages: read  # pulls the app-builder image
 
 jobs:
   build_application:

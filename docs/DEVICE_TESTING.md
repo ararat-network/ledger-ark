@@ -24,19 +24,28 @@ prefer a device you are comfortable experimenting on.
 
 ### Build and install
 
-The build generates a self-contained installer per device under `app/pkg/`, with the
-hex image and the load parameters (app name, both derivation paths) embedded:
+Install `ledgerblue` once (a venv keeps it isolated) and read the device's firmware
+version from the dashboard; the query needs no confirmation:
+
+```bash
+python3 -m venv ~/.ledger-venv && ~/.ledger-venv/bin/pip install ledgerblue
+```
+
+```bash
+~/.ledger-venv/bin/python3 -c 'from ledgerblue.comm import getDongle; r = bytes(getDongle().exchange(bytes.fromhex("e001000000"))); print(r[5:5 + r[4]].decode())'
+```
+
+The device installs only an app built at the API level of its firmware (`0x511f`
+otherwise), and the builder image pins its SDK at one level, so check out the matching
+`API_LEVEL_<n>` branch of the image's SDK first. The level table is in the SDK's README
+(LedgerHQ/ledger-secure-sdk); Flex 1.7.0 is level 27. The build generates a
+self-contained installer per device under `app/pkg/`, with the hex image and the load
+parameters (app name, both derivation paths) embedded:
 
 ```bash
 docker run --rm -v "$PWD":/app -w /app/app \
   ghcr.io/ledgerhq/ledger-app-builder/ledger-app-builder-lite:latest \
-  bash -c 'make clean >/dev/null; BOLOS_SDK=$FLEX_SDK make -j4'
-```
-
-Install `ledgerblue` once (a venv keeps it isolated), then load:
-
-```bash
-python3 -m venv ~/.ledger-venv && ~/.ledger-venv/bin/pip install ledgerblue
+  bash -c 'git -C $FLEX_SDK checkout -q origin/API_LEVEL_27 && make clean >/dev/null; BOLOS_SDK=$FLEX_SDK make -j4'
 ```
 
 ```bash
@@ -45,12 +54,15 @@ PATH=~/.ledger-venv/bin:$PATH ./app/pkg/installer_flex.sh load
 
 The device shows the unverified-app warning and asks for the PIN. `installer_flex.sh
 delete` removes the app again. If `ledgerblue` cannot see the device, check that
-Ledger Live is closed and the device is unlocked on the dashboard.
+Ledger Live is closed and the device is unlocked on the dashboard; `0x5515` is the
+locked dashboard.
 
 ### Verify on the dashboard
 
 - [ ] The Ark icon renders on the dashboard; opening it shows the app name and,
-      under settings, version 1.0.0.
+      under settings, the version from `app/Makefile.version`. It must be 2.1.0 or
+      later: the Cosmos ledger library behind every Go client, `arkd` included, refuses
+      an older app before deriving anything.
 
 ### Probe the derivation domains
 
@@ -132,6 +144,14 @@ cd ../ark && build/arkd testnet init-files -v 1 -o ~/.ark-devnet \
   --chain-id ark-1 --keyring-backend test
 ```
 
+The launch deposit floor is 1,000 NOAH and the devnet's whole supply is 500, so no
+proposal would ever reach its vote; lower the floor and shorten the vote before the
+first start:
+
+```bash
+cd ~/.ark-devnet/node0/arkd/config && jq '.app_state.gov.params.min_deposit[0].amount = "1000000000000000000" | .app_state.gov.params.voting_period = "600s"' genesis.json > g.json && mv g.json genesis.json
+```
+
 ```bash
 cd ../ark && build/arkd start --home ~/.ark-devnet/node0/arkd
 ```
@@ -149,28 +169,42 @@ build/arkd keys add flex --ledger --keyring-backend test --home ~/.ark-devnet/no
 - [ ] The address matches the stage-1 probe's 330' address.
 - [ ] `keys add flex118 --ledger --coin-type 118` likewise matches the legacy probe.
 
-Fund it from the validator account created by `init-files`, then send from the device:
+Fund it from the validator account created by `init-files`, then send from the device.
+No fee flags anywhere: Treasury prices every transaction and `arkd` declares the fee
+itself, so an explicit `--fees` below the live base fee is refused with code 13.
 
 ```bash
-build/arkd tx bank send node0 $(build/arkd keys show flex -a --keyring-backend test --home ~/.ark-devnet/node0/arkd) 1000000000000000000anoah \
-  --chain-id ark-1 --keyring-backend test --home ~/.ark-devnet/node0/arkd --fees 300000000000000anoah -y
+build/arkd tx bank send node0 $(build/arkd keys show flex -a --keyring-backend test --home ~/.ark-devnet/node0/arkd) 2000000000000000000anoah \
+  --chain-id ark-1 --keyring-backend test --home ~/.ark-devnet/node0/arkd -y
 ```
 
 ```bash
 build/arkd tx bank send flex ark1w4efqfklkezgyt6lncjdwxncrzyzpr2eech3ul 500000000000000000anoah \
-  --sign-mode amino-json --chain-id ark-1 --keyring-backend test --home ~/.ark-devnet/node0/arkd --fees 300000000000000anoah
+  --sign-mode amino-json --chain-id ark-1 --keyring-backend test --home ~/.ark-devnet/node0/arkd -y
 ```
 
-`--sign-mode amino-json` is required: the device signs the legacy amino sign doc.
+`--sign-mode amino-json` is required: the device signs the legacy amino sign doc. `-y`
+skips the CLI's confirmation so the command reaches the device at once. The Go HID
+library under `arkd` sometimes reports `hidapi: unknown failure`, which is macOS
+reporting the device gone mid-exchange; quit and reopen the Ark app and rerun. Its
+errors say "Cosmos app" because `arkd` does not set the app name.
 
 - [ ] The device review shows **no** chain-id/account/sequence screens (default chain,
       non-expert), the amount and fee as `NOAH` figures at 18 decimals, and `ark1...`
       addresses.
 - [ ] Approving broadcasts successfully; `build/arkd q tx <hash>` shows code 0.
-- [ ] A delegation (`tx staking delegate`) and a gov vote (`tx gov vote`) sign and land
-      the same way.
-- [ ] Rejecting on the device surfaces a clean CLI error and the next command works —
-      the device is idle, not wedged mid-transaction.
+- [ ] A delegation of at least 1 NOAH (`tx staking delegate <valoper> 1000000000000000000anoah`)
+      signs and lands the same way. It comes first: voting needs that much staked.
+- [ ] A gov vote (`tx gov vote 1 yes`) signs and lands. Put the proposal up from `node0`
+      beforehand; a text proposal needs non-empty `metadata` and the patched deposit:
+
+      ```bash
+      printf '{"messages": [], "metadata": "hardware-pass", "deposit": "1000000000000000000anoah", "title": "Hardware pass", "summary": "Exists so a device-signed vote can land.", "expedited": false}\n' > proposal.json && build/arkd tx gov submit-proposal proposal.json --from node0 --chain-id ark-1 --keyring-backend test --home ~/.ark-devnet/node0/arkd -y
+      ```
+
+- [ ] Rejecting on the device surfaces the user-rejected status word as a clean CLI
+      error and the next command works — the device is idle, not wedged
+      mid-transaction.
 
 ## Stage 3 — Ark-specific messages
 
@@ -181,27 +215,35 @@ funded `flex` account, walk the user-signable surface (discover exact arguments 
 `tx <module> --help`; every command takes the stage-2 flags including
 `--sign-mode amino-json`):
 
-- [ ] `tx market ...` — every order a trader signs (`tx market --help`), between
-      `anoah` and a stablecoin denom. The Type screen must show the short amino name,
-      and the offer and ask fields, bound included, must render.
-- [ ] `tx disbursement release` with one or two grant IDs, the one disbursement msg an
-      ordinary account signs: the ID list must render. Without grants on the devnet it
-      fails on chain, which does not matter here; the review is what is under test.
+- [ ] `tx market sell 100000000000000000anoah ausd 1ausd` and the matching `buy`, the
+      orders a trader signs. The Type screen must show the short amino name, and the
+      offer and ask fields, bound included, must render. Without an oracle rate on the
+      devnet it fails on chain, which does not matter here; the review is what is under
+      test.
+- [ ] `tx disbursement set-payee --grant-id 1 --payee <addr>` and `set-controller`, the
+      disbursement msgs an ordinary account signs: the grant id and addresses must
+      render. Without grants it fails on chain, as above.
 - [ ] A wasm execute (`tx wasm execute`): store and instantiate the chain repo's
-      `tests/e2e/testdata/counter.wasm` (`{"count":0}`), then execute
-      `{"increment":{}}`. The JSON msg body renders as paginated screens — confirm it
-      stays readable, not garbage. A cw3 committee's members sign exactly this shape.
+      `tests/e2e/testdata/counter.wasm` (`{"count":0}`) from `node0` — a store runs to
+      133 kB, far past the app's buffer — then execute `{"increment":{}}` from `flex`
+      with `--gas auto`. The JSON msg body renders as paginated screens — confirm it
+      stays readable, not garbage, and that `get_count` moved. A cw3 committee's members
+      sign exactly this shape.
 - [ ] A multisig member's signature, which is how a multisig committee signs: `keys add
       com --multisig flex,node0 --multisig-threshold 2`, fund `com`, write a
       `tx bank send com ... --generate-only` to `tx.json`, sign it with
-      `tx sign tx.json --multisig com --from flex` (and again `--from node0`), then
+      `tx sign tx.json --multisig com --from flex --sign-mode amino-json
+      --output-document flex.json` (and again `--from node0`), then
       `tx multisign tx.json com flex.json node0.json` and `tx broadcast`. The review
       must show `com` as the sender, since it is not the device's own address, and the
       combined transaction must land.
-- [ ] One deliberately large transaction — a `gov submit-proposal` with a long
-      description or a wasm execute with a sizeable payload. Either it reviews cleanly
-      or it fails with the explicit "Transaction is too big" error. Truncated or
-      partial display is a bug; stop and file it.
+- [ ] Two deliberately large proposals. The app buffers 16 kB of sign document
+      (`FLASH_BUFFER_SIZE`): a `gov submit-proposal` with a 20 kB summary and an
+      explicit `--gas 400000` (the chain caps a summary at 10,200 characters, so a
+      simulated `--gas auto` never reaches the device) must be refused with `0x6988`,
+      "transaction data exceeds the device's internal buffer capacity", before any
+      review, and the app must stay up. A 6 kB summary must review to its last page and
+      land. Truncated or partial display is a bug; stop and file it.
 - [ ] Repeat one custom msg with expert mode enabled on the device: every raw field,
       including chain id and sequence, appears.
 

@@ -21,6 +21,7 @@ permissions:
   security-events: write
   contents: read
   actions: read
+  packages: read  # pulls the app-builder image
 
 jobs:
   analyse:
