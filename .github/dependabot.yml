@@ -9,3 +9,16 @@ updates:
       actions:
         patterns:
           - "*"
+
+  # Security fixes only for the emulator harness: a zero PR limit turns off
+  # version updates, and the group bundles each round of advisories into one PR.
+  - package-ecosystem: npm
+    directory: /tests_zemu
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 0
+    groups:
+      zemu-security:
+        applies-to: security-updates
+        patterns:
+          - "*"
