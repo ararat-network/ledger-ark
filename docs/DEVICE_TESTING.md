@@ -38,7 +38,10 @@ python3 -m venv ~/.ledger-venv && ~/.ledger-venv/bin/pip install ledgerblue
 The device installs only an app built at the API level of its firmware (`0x511f`
 otherwise), and the builder image pins its SDK at one level, so check out the matching
 `API_LEVEL_<n>` branch of the image's SDK first. The level table is in the SDK's README
-(LedgerHQ/ledger-secure-sdk); Flex 1.7.0 is level 27. The build generates a
+(LedgerHQ/ledger-secure-sdk); Flex 1.7.0 is level 27. The release builds at the SDK tag
+`SDK_TAG` in [release.yml](../.github/workflows/release.yml) names, through
+[build_installers.sh](../.github/scripts/build_installers.sh); to test what members
+install, check out that tag instead, or load the released installer. The build generates a
 self-contained installer per device under `app/pkg/`, with the hex image and the load
 parameters (app name, both derivation paths) embedded:
 
