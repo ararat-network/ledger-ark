@@ -34,34 +34,33 @@ address_encoding_e check(uint32_t coinType, const char *hrp) {
 
 }  // namespace
 
-// The app serves exactly two derivation domains: 330' (the Terra coin type
-// Ark continues) and 118' (pre-2019 legacy Terra wallets). Both derive
-// standard sha256/ripemd160 bech32 addresses.
-TEST(ChainConfig, ArkHrpResolvesOnBothSupportedPaths) {
+// The app serves one derivation domain, 330', the Terra coin type Ark continues,
+// deriving standard sha256/ripemd160 bech32 addresses.
+TEST(ChainConfig, ArkHrpResolvesOnTheSupportedPath) {
   EXPECT_EQ(check(330, "ark"), BECH32_STANDARD);
-  EXPECT_EQ(check(118, "ark"), BECH32_STANDARD);
 }
 
 // There is no HRP table: any well-formed HRP is accepted on a supported path,
 // so wallets that re-encode the same key under another prefix keep working.
-TEST(ChainConfig, AnyWellFormedHrpResolvesOnSupportedPaths) {
+TEST(ChainConfig, AnyWellFormedHrpResolvesOnTheSupportedPath) {
   for (const char *hrp : {"terra", "osmo", "arkvaloper", "c4e", "e-money"}) {
     EXPECT_EQ(check(330, hrp), BECH32_STANDARD) << hrp;
-    EXPECT_EQ(check(118, hrp), BECH32_STANDARD) << hrp;
   }
 }
 
+// 118 is Cosmos Hub's coin type and most chains': refusing it keeps an Ark key
+// from ever being the key behind a user's other balances. 60 was the removed
+// Ethereum path.
 TEST(ChainConfig, AnyOtherCoinTypeIsRefused) {
-  for (const uint32_t coinType : {0u, 1u, 60u, 119u, 329u, 331u, 529u}) {
+  for (const uint32_t coinType : {0u, 1u, 60u, 118u, 119u, 329u, 331u, 529u}) {
     EXPECT_EQ(check(coinType, "ark"), UNSUPPORTED) << coinType;
   }
 }
 
-// A non-hardened coin type is never accepted: the supported paths are
-// compared against `0x80000000 | path`.
+// A non-hardened coin type is never accepted: the supported path is compared
+// against `0x80000000 | path`.
 TEST(ChainConfig, NonHardenedPathIsRefused) {
   EXPECT_EQ(checkChainConfig(330, "ark", 3), UNSUPPORTED);
-  EXPECT_EQ(checkChainConfig(118, "ark", 3), UNSUPPORTED);
 }
 
 // ---------------------------------------------------------------------------
@@ -80,14 +79,13 @@ TEST(ChainConfig, NonHardenedPathIsRefused) {
 // would display an address under a different HRP than the one it validated.
 TEST(ChainConfig, EmbeddedNulIsRefused) {
   EXPECT_EQ(checkChainConfig(0x80000000u | 330u, "ark\0X", 5), UNSUPPORTED);
-  EXPECT_EQ(checkChainConfig(0x80000000u | 118u, "ark\0X", 5), UNSUPPORTED);
 }
 
 // A trailing NUL inside the declared length is the same bypass with the same
 // payload, and is refused for the same reason.
 TEST(ChainConfig, TrailingNulInsideTheDeclaredLengthIsRefused) {
   EXPECT_EQ(checkChainConfig(0x80000000u | 330u, "ark\0", 4), UNSUPPORTED);
-  EXPECT_EQ(checkChainConfig(0x80000000u | 118u, "terra\0", 6), UNSUPPORTED);
+  EXPECT_EQ(checkChainConfig(0x80000000u | 330u, "terra\0", 6), UNSUPPORTED);
 }
 
 // Pins the downstream behaviour the check above compensates for. If zxlib ever
@@ -114,7 +112,7 @@ TEST(ChainConfig, Bech32EncoderMeasuresTheHrpWithStrlen) {
 TEST(ChainConfig, UppercaseHrpIsRefused) {
   EXPECT_EQ(checkChainConfig(0x80000000u | 330u, "ARK", 3), UNSUPPORTED);
   EXPECT_EQ(checkChainConfig(0x80000000u | 330u, "Ark", 3), UNSUPPORTED);
-  EXPECT_EQ(checkChainConfig(0x80000000u | 118u, "TERRA", 5), UNSUPPORTED);
+  EXPECT_EQ(checkChainConfig(0x80000000u | 330u, "TERRA", 5), UNSUPPORTED);
 }
 
 // bech32 restricts the HRP to printable ASCII, [33, 126]. Space and DEL sit

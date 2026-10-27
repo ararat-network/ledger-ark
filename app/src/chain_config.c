@@ -39,9 +39,8 @@ address_encoding_e checkChainConfig(uint32_t path, const char *hrp,
   }
 
   // Any well-formed HRP derives a standard sha256/ripemd160 bech32 address on
-  // the Terra coin type Ark continues, or on the legacy 118' coin type that
-  // pre-2019 Terra wallets used.
-  if (path == HDPATH_1_DEFAULT || path == HDPATH_1_LEGACY) {
+  // the Terra coin type Ark continues, the one coin type served.
+  if (path == HDPATH_1_DEFAULT) {
     return BECH32_STANDARD;
   }
 
