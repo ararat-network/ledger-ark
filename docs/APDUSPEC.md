@@ -87,17 +87,16 @@ The general structure of commands and responses is as follows:
 | HRP_LEN    | byte(1)        | Bech32 HRP Length              | 1<=HRP_LEN<=83 |
 | HRP        | byte (HRP_LEN) | Bech32 HRP                     |                |
 | Path[0]    | byte (4)       | Derivation Path Data           | 44'            |
-| Path[1]    | byte (4)       | Derivation Path Data           | 330' / 118'    |
+| Path[1]    | byte (4)       | Derivation Path Data           | 330'           |
 | Path[2]    | byte (4)       | Derivation Path Data           | account        |
 | Path[3]    | byte (4)       | Derivation Path Data           | 0              |
 | Path[4]    | byte (4)       | Derivation Path Data           | index          |
 
 Path items are little-endian `uint32` values. Hardened items arrive with the hardening bit already set: the app
-hardens nothing itself. Path[0] must be 44', Path[1] 330' or 118', and Path[3] 0, otherwise 0x698B. Outside expert mode, Path[2]
+hardens nothing itself. Path[0] must be 44', Path[1] 330', and Path[3] 0, otherwise 0x698B. Outside expert mode, Path[2]
 and Path[4] must be at most 100, hardened or not, otherwise 0x6989.
 
-The HRP must be printable ASCII (0x21–0x7E) with no uppercase letters, otherwise 0x698C. Any such HRP is accepted
-on either coin type.
+The HRP must be printable ASCII (0x21–0x7E) with no uppercase letters, otherwise 0x698C. Any such HRP is accepted.
 
 #### Response
 
@@ -132,7 +131,7 @@ All other packets/chunks should contain message to sign
 | Field      | Type     | Content                | Expected  |
 | ---------- | -------- | ---------------------- | --------- |
 | Path[0]    | byte (4)       | Derivation Path Data           | 44'            |
-| Path[1]    | byte (4)       | Derivation Path Data           | 330' / 118'    |
+| Path[1]    | byte (4)       | Derivation Path Data           | 330'           |
 | Path[2]    | byte (4)       | Derivation Path Data           | account        |
 | Path[3]    | byte (4)       | Derivation Path Data           | 0              |
 | Path[4]    | byte (4)       | Derivation Path Data           | index          |

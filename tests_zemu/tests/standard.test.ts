@@ -116,50 +116,27 @@ describe('Standard', function () {
     }
   })
 
-  test.concurrent.each(DEVICE_MODELS)('get legacy address', async function (m) {
-    const sim = new Zemu(m.path)
-    try {
-      await sim.start({ ...defaultOptions, model: m.name })
-      const app = new ArkApp(sim.getTransport())
-
-      // Pre-2019 Terra wallets derived at coin type 118. The legacy
-      // 118' path stays accepted so those holders can reach their accounts.
-      const path = "m/44'/118'/0'/0/0"
-      const resp = await app.getAddressAndPubKey(path, 'ark')
-
-      console.log(resp)
-
-      expect(resp).toHaveProperty('bech32_address')
-      expect(resp).toHaveProperty('compressed_pk')
-
-      expect(resp.bech32_address).toEqual('ark1w34k53py5v5xyluazqpq65agyajavep2nns3mh')
-      expect(resp.compressed_pk.length).toEqual(33)
-      expect(resp.compressed_pk.toString("hex")).toEqual('034fef9cd7c4c63588d3b03feb5281b9d232cba34d6f3d71aee59211ffbfe1fe87')
-    } finally {
-      await sim.close()
-    }
-  })
-
   test.concurrent.each(DEVICE_MODELS)('unsupported coin type is refused', async function (m) {
     const sim = new Zemu(m.path)
     try {
       await sim.start({ ...defaultOptions, model: m.name })
       const app = new ArkApp(sim.getTransport())
 
-      // The app serves 330' and the legacy 118' only. The Ethereum-style 60'
-      // derivation was removed with the ETH address support, so the path is
-      // refused before the HRP is even considered.
-      const path = "m/44'/60'/0'/0/1"
+      // The app serves 330' only, refused before the HRP is even considered:
+      // 118' is Cosmos Hub's coin type and most chains', so an Ark key is never
+      // the key behind a user's other balances, and the Ethereum-style 60'
+      // derivation was removed with the ETH address support.
+      for (const path of ["m/44'/118'/0'/0/0", "m/44'/60'/0'/0/1"]) {
+        await expect(app.getAddressAndPubKey(path, 'ark')).rejects.toMatchObject({
+          returnCode: 0x698B,
+        })
 
-      await expect(app.getAddressAndPubKey(path, 'ark')).rejects.toMatchObject({
-        returnCode: 0x698B,
-      })
-
-      // Same guard on the confirm-on-device entry point: it has to fail before
-      // anything reaches the screen.
-      await expect(app.showAddressAndPubKey(path, 'ark')).rejects.toMatchObject({
-        returnCode: 0x698B,
-      })
+        // Same guard on the confirm-on-device entry point: it has to fail before
+        // anything reaches the screen.
+        await expect(app.showAddressAndPubKey(path, 'ark')).rejects.toMatchObject({
+          returnCode: 0x698B,
+        })
+      }
 
       // There is no HRP table: any well-formed HRP works on a supported path,
       // so wallets that re-encode the same key under another prefix keep

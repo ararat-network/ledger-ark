@@ -65,8 +65,9 @@ CURVE_APP_LOAD_PARAMS = secp256k1
 # If your app needs it, you can specify multiple path by using:
 # `PATH_APP_LOAD_PARAMS = "44'/1'" "45'/1'"`
 
-# 330' continues Terra Classic keys; 118' serves pre-2019 legacy Terra wallets.
-APPPATH =  "44'/330'" "44'/118'"
+# 330' continues Terra Classic keys. No other coin type is served: 118' is Cosmos Hub's
+# and most chains', and an Ark key must never be the key behind a member's other balances.
+APPPATH =  "44'/330'"
 $(info PATHS LIST = $(APPPATH))
 PATH_APP_LOAD_PARAMS = $(APPPATH)
 

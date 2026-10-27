@@ -23,10 +23,10 @@ extern "C" {
 #define HDPATH_LEN_DEFAULT 5
 
 #define HDPATH_0_DEFAULT (0x80000000u | 0x2cu)
-// 330 is the Terra coin type: Ark accounts continue Terra Classic keys.
+// 330 is the Terra coin type: Ark accounts continue Terra Classic keys. It is
+// the only coin type served; 118, Cosmos Hub's, would make an Ark key the key
+// behind a member's other balances.
 #define HDPATH_1_DEFAULT (0x80000000u | 0x14au)
-// Pre-2019 Terra wallets derived at coin type 118.
-#define HDPATH_1_LEGACY (0x80000000u | 0x76u)
 #define HDPATH_2_DEFAULT (0x80000000u | 0u)
 #define HDPATH_3_DEFAULT (0u)
 

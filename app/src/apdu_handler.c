@@ -101,8 +101,7 @@ __Z_INLINE void extractHDPath(uint32_t rx, uint32_t offset) {
          sizeof(uint32_t) * HDPATH_LEN_DEFAULT);
 
   // Check values
-  if (hdPath[0] != HDPATH_0_DEFAULT ||
-      ((hdPath[1] != HDPATH_1_DEFAULT) && (hdPath[1] != HDPATH_1_LEGACY)) ||
+  if (hdPath[0] != HDPATH_0_DEFAULT || hdPath[1] != HDPATH_1_DEFAULT ||
       hdPath[3] != HDPATH_3_DEFAULT) {
     THROW(APDU_CODE_INVALID_HD_PATH_COIN_VALUE);
   }
