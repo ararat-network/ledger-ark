@@ -20,33 +20,13 @@ path and the Ledger Live swap integration were removed.
 - C++ unit tests
 - Zemu tests
 
-## ATTENTION
+## Install a release
 
-Please:
-
-- **Do not use in production**
-- **Do not use a Ledger device with funds for development purposes.**
-- **Have a separate and marked device that is used ONLY for development and testing**
-
-Tip:
-
-- Releases carry precompiled test installers. If you are just curious, you can load one and avoid building.
-
-## Download and install a prerelease
-
-*Once the app is approved by Ledger, it will be available in their app store (Ledger Live).
-Until then, each `v*` tag publishes a [release](https://github.com/ararat-network/ledger-ark/releases) with demo
-builds; the app's home screen reads DO NOT USE. THESE ARE UNVETTED DEVELOPMENT RELEASES*
-
-Download the installer for your device (`installer_nanos_plus.sh`, `installer_stax.sh`, `installer_flex.sh` or
-`installer_apex_p.sh`; the Nano X cannot sideload) together with `SHA256SUMS`, check it, and load it. The
-installers need `ledgerblue` (see [Preconditions](#preconditions)):
-
-```sh
-sha256sum --check --ignore-missing SHA256SUMS
-chmod +x ./installer_nanos_plus.sh
-./installer_nanos_plus.sh load
-```
+Until Ledger lists the app in Ledger Live, it is sideloaded: download the installer for your device and `SHA256SUMS`
+from a [release](https://github.com/ararat-network/ledger-ark/releases), check it, and load it with `ledgerblue`.
+[docs/SIDELOAD.md](docs/SIDELOAD.md) is the guide, with the firmware rule, the device list (the Nano X cannot
+sideload), and what a release carries. A release is a production build; the device still warns that the app is
+unsigned until Ledger lists it.
 
 # Development
 
@@ -152,5 +132,6 @@ make loadFL                           # Flex
 
 - [APDU Protocol](docs/APDUSPEC.md)
 - [Transaction format](docs/TXSPEC.md)
+- [Installing without Ledger Live](docs/SIDELOAD.md)
 - [Hardware verification](docs/DEVICE_TESTING.md)
 - [Security policy](SECURITY.md)
