@@ -10,8 +10,8 @@ registration.
 Ledger Live installs only apps Ledger has signed. Until that signature exists, the app is loaded over USB by
 `ledgerblue`, Ledger's own loader, from an installer this repository releases. The device knows the app is unsigned:
 it shows an unverified-app warning at install and asks for the PIN. Installing never exposes the seed. An app reaches
-keys only through BOLOS syscalls, inside the derivation paths its install manifest declares, `44'/330'` and `44'/118'`
-for this app, and the bytes loaded are the ones the release's checksum names.
+keys only through BOLOS syscalls, inside the derivation path its install manifest declares, `44'/330'` for this app,
+and the bytes loaded are the ones the release's checksum names.
 
 Three limits follow from the device, not from the app:
 
@@ -82,7 +82,7 @@ keyring. From the CLI:
 arkd keys add NAME --ledger
 ```
 
-derives the `44'/330'` account, and `--coin-type 118` the legacy Terra path. Transactions sign with
+derives the `44'/330'` account; the app refuses every other coin type. Transactions sign with
 `--sign-mode amino-json`, the sign document the device displays. [DEVICE_TESTING.md](DEVICE_TESTING.md) stage 2 walks
 the flow against a local chain.
 

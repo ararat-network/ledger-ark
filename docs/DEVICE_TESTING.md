@@ -43,7 +43,7 @@ otherwise), and the builder image pins its SDK at one level, so check out the ma
 [build_installers.sh](../.github/scripts/build_installers.sh); to test what members
 install, check out that tag instead, or load the released installer. The build generates a
 self-contained installer per device under `app/pkg/`, with the hex image and the load
-parameters (app name, both derivation paths) embedded:
+parameters (app name, derivation path) embedded:
 
 ```bash
 docker run --rm -v "$PWD":/app -w /app/app \
@@ -88,10 +88,9 @@ async function main() {
 
   const main330 = await app.getAddressAndPubKey("m/44'\''/330'\''/0'\''/0/0", "ark");
   console.log("330:", main330.bech32_address);
-  const legacy118 = await app.getAddressAndPubKey("m/44'\''/118'\''/0'\''/0/0", "ark");
-  console.log("118:", legacy118.bech32_address);
 
   for (const [path, hrp, want] of [
+    ["m/44'\''/118'\''/0'\''/0/0", "ark", 0x698b],  // Cosmos Hub coin type, refused
     ["m/44'\''/60'\''/0'\''/0/0", "ark", 0x698b],   // removed eth path
     ["m/44'\''/330'\''/0'\''/0/0", "ARK", 0x698c],  // malformed HRP
   ] as const) {
@@ -107,16 +106,14 @@ main().then(() => process.exit(0));
 '
 ```
 
-- [ ] Both paths return `ark1...` addresses (they differ from each other — different
-      derivation domains, same seed).
-- [ ] The 60' path is refused with `0x698b` and the malformed HRP with `0x698c`.
+- [ ] The 330' path returns an `ark1...` address.
+- [ ] The 118' and 60' paths are refused with `0x698b` and the malformed HRP with `0x698c`.
 - [ ] The show-address flow displays the identical `ark1...` string on the device, with
       the "Verify Ark address" heading and working QR page.
 
 With the Zemu test mnemonic (`equip will roof matter pink blind book anxiety banner
 elbow sun young`) the 330' account 0 address is
-`ark1uayrf8zh44620zyjd052gdcjcrvjpgkk7qjclx` and the legacy one is
-`ark1w34k53py5v5xyluazqpq65agyajavep2nns3mh`. With a personal seed there are no
+`ark1uayrf8zh44620zyjd052gdcjcrvjpgkk7qjclx`. With a personal seed there are no
 published vectors; the check is instead that stage 2's `arkd keys add --ledger` — a
 completely separate client stack — reports the same address this probe printed.
 
@@ -170,7 +167,6 @@ build/arkd keys add flex --ledger --keyring-backend test --home ~/.ark-devnet/no
 ```
 
 - [ ] The address matches the stage-1 probe's 330' address.
-- [ ] `keys add flex118 --ledger --coin-type 118` likewise matches the legacy probe.
 
 Fund it from the validator account created by `init-files`, then send from the device.
 No fee flags anywhere: Treasury prices every transaction and `arkd` declares the fee

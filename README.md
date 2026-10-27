@@ -11,9 +11,9 @@
 This project contains the Ark app for Ledger Nano S+, X, Stax, Flex and Apex P.
 
 It is a fork of [cosmos/ledger-cosmos](https://github.com/cosmos/ledger-cosmos) (Zondax) rebranded for the
-Ark chain: derivation on the Terra coin type 330' (with 118' kept for legacy Terra wallets), the `ark`
-bech32 prefix, `ark-1` as the default chain id, and NOAH denomination display. The Ethereum-style 60'
-path and the Ledger Live swap integration were removed.
+Ark chain: derivation on the Terra coin type 330' alone, the `ark` bech32 prefix, `ark-1` as the default
+chain id, and NOAH denomination display. The Ethereum-style 60' path, the legacy 118' path, and the Ledger
+Live swap integration were removed.
 
 - Ledger Nano S+/X/Stax/Flex/Apex P Ark app
 - Specs / Documentation
