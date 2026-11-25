@@ -52,3 +52,15 @@ zxerr_t tx_getTextualNumItems(uint8_t *num_items);
 zxerr_t tx_getItem(uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
                    char *outValue, uint16_t outValueLen, uint8_t pageIdx,
                    uint8_t *pageCount);
+
+#if defined(TARGET_NANOX) || defined(TARGET_NANOS2)
+// ledger-zxlib 56 defines getIntroPages in view_nano.c and calls it from
+// view_x.c, in the step that skips a blind-signed review to its approval, but
+// declares it in no header. Ledger's SDK builds with
+// -Wno-implicit-function-declaration, so the call compiled as if the function
+// returned int. Both files include this header, which gives the call its
+// prototype and has the compiler check it against the definition. This app has
+// no blind signing, so the step is never part of a review here. Drop this once
+// zxlib declares the function itself.
+uint8_t getIntroPages(void);
+#endif
