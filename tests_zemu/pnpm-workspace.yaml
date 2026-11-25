@@ -4,6 +4,12 @@ overrides:
   uuid: ^11.1.1
   # @ledgerhq/hw-transport-http pins ws to exactly 8.18.3.
   ws: ^8.21.0
+  # GHSA-g3hv-75wg-m249: minimatch 7 to 11.0.0 has no fixed release short of 11.0.1.
+  # jest 30 reaches minimatch 9 through glob 10, which reads minimatch's internals and
+  # matches no wildcard on minimatch 11, so glob moves to 14, the line built on 11.
+  glob@>=10.0.0 <14.0.0: ^14.0.6
+  # eslint and typescript-eslint pin minimatch ^10 and use only its public matcher.
+  minimatch@>=10.0.0 <11.0.1: ^11.0.1
 
 allowBuilds:
   cpu-features: false

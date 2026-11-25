@@ -26,15 +26,17 @@
 extern "C" {
 #endif
 
-// The review UI reaches items through zxlib's viewfunc_getItem_t, whose
-// displayIdx is int8_t. An index above 127 arrives negative and is refused, so
-// items beyond this point cannot be shown even though the parser can render
-// them. Count no further than the screen can reach.
+// The most items a review may have. A document that needs more is refused, not
+// shown in part.
 //
-// 127 is exact, not a round number. The Nano review calls getItem once more at
-// index == numItems as its end-of-list sentinel, so the largest index the
-// callback ever sees is 127, which is INT8_MAX. Raising this to 128 makes that
-// sentinel arrive as -128 and puts the narrowing straight back.
+// The number comes from zxlib's viewfunc_getItem_t as it was through zxlib 51,
+// where displayIdx was int8_t: an index above 127 arrived negative, and the
+// Nano review asks once more at index == numItems as its end-of-list sentinel,
+// so 127 was the largest count whose every index still reached the callback.
+// Since zxlib 56 the index is uint8_t and the view reserves only 0xFF
+// (VIEW_INTRO_DISPLAY_IDX), so the screen could now reach further. The ceiling
+// is kept where it was: raising it changes which documents the app signs, and
+// that is a decision of its own, not a side effect of a library update.
 #define MAX_REVIEW_ITEMS 127
 
 typedef enum {

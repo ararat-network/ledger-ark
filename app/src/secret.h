@@ -27,7 +27,7 @@ zxerr_t secret_enabled();
 
 zxerr_t secret_getNumItems(uint8_t *num_items);
 
-zxerr_t secret_getItem(int8_t displayIdx, char *outKey, uint16_t outKeyLen,
+zxerr_t secret_getItem(uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
                        char *outValue, uint16_t outValueLen, uint8_t pageIdx,
                        uint8_t *pageCount);
 
