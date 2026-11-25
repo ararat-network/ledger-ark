@@ -27,7 +27,7 @@
 #include <zxformat.h>
 #include <zxmacros.h>
 
-#define NUM_REQUIRED_ROOT_PAGES 8
+#define NUM_REQUIRED_ROOT_PAGES 10
 
 // Hex escape "\xNN" requires 4 characters, but snprintf adds a null terminator
 #define HEX_ESCAPE_LEN 4
@@ -57,6 +57,10 @@ const char *get_required_root_item(root_item_e i) {
     return "tip";
   case root_item_timeout_height:
     return "timeout_height";
+  case root_item_unordered:
+    return "unordered";
+  case root_item_timeout_timestamp:
+    return "timeout_timestamp";
   default:
     return "?";
   }
@@ -87,6 +91,10 @@ __Z_INLINE uint8_t get_root_max_level(root_item_e i) {
   case root_item_tip:
     return 1;
   case root_item_timeout_height:
+    return 2;
+  case root_item_unordered:
+    return 2;
+  case root_item_timeout_timestamp:
     return 2;
   default:
     return 0;
@@ -476,6 +484,13 @@ __Z_INLINE parser_error_t get_subitem_count(root_item_e root_item,
   case root_item_tip:
     tmp_num_items += 0;
     break;
+  case root_item_unordered:
+  case root_item_timeout_timestamp:
+    // Shown whenever present, in and out of expert mode and on every chain.
+    // An unordered transaction has no sequence to bound it: the expiry is the
+    // only limit on how long the signature stays usable, so the signer reads
+    // it on every review.
+    break;
   default:
     break;
   }
@@ -621,6 +636,8 @@ static const key_subst_t key_substitutions[] = {
     {"account_number", "Account"},
     {"sequence", "Sequence"},
     {"timeout_height", "Timeout Height"},
+    {"unordered", "Unordered"},
+    {"timeout_timestamp", "Timeout Timestamp"},
     {"memo", "Memo"},
     {"fee/amount", "Fee"},
     {"fee/gas", "Gas"},

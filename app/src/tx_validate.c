@@ -279,6 +279,118 @@ static parser_error_t validate_allowed_keys(parsed_json_t *json,
   return parser_ok;
 }
 
+// True when the token has the given type and exactly the given text.
+static bool token_is(const parsed_json_t *json, uint16_t token_index,
+                     jsmntype_t type, const char *expected) {
+  if (token_index >= json->numberOfTokens) {
+    return false;
+  }
+
+  const jsmntok_t *token = &json->tokens[token_index];
+  if (token->type != type || token->start < 0 || token->end < token->start ||
+      token->end > (int)json->bufferLen) {
+    return false;
+  }
+
+  const size_t expected_len = strlen(expected);
+  return (size_t)(token->end - token->start) == expected_len &&
+         MEMCMP(json->buffer + token->start, expected, expected_len) == 0;
+}
+
+static bool is_digit(char c) { return c >= '0' && c <= '9'; }
+
+// Reads the two decimal digits at p as a number within [min, max].
+static bool two_digits_within(const char *p, uint8_t min, uint8_t max) {
+  if (!is_digit(p[0]) || !is_digit(p[1])) {
+    return false;
+  }
+  const uint8_t value = (uint8_t)((p[0] - '0') * 10 + (p[1] - '0'));
+  return value >= min && value <= max;
+}
+
+// timeout_timestamp is a protobuf Timestamp, which the chain's amino JSON
+// encoder writes as Go formats a UTC time in RFC 3339: a four-digit year,
+// "YYYY-MM-DDTHH:MM:SSZ", with a fraction of one to nine digits and no trailing
+// zero before the Z when the nanoseconds are not zero. That one spelling is
+// accepted and nothing else: the review shows the text as signed, so a zone
+// offset or a looser rendering would have the signer work out an expiry the
+// chain could never have asked for.
+static bool is_rfc3339_utc(const char *p, int len) {
+  // 2006-01-02T15:04:05Z up to 2006-01-02T15:04:05.999999999Z
+  if (len != 20 && (len < 22 || len > 30)) {
+    return false;
+  }
+
+  if (!is_digit(p[0]) || !is_digit(p[1]) || !is_digit(p[2]) ||
+      !is_digit(p[3]) || p[4] != '-' || !two_digits_within(p + 5, 1, 12) ||
+      p[7] != '-' || !two_digits_within(p + 8, 1, 31) || p[10] != 'T' ||
+      !two_digits_within(p + 11, 0, 23) || p[13] != ':' ||
+      !two_digits_within(p + 14, 0, 59) || p[16] != ':' ||
+      !two_digits_within(p + 17, 0, 59) || p[len - 1] != 'Z') {
+    return false;
+  }
+
+  if (len == 20) {
+    return true;
+  }
+
+  if (p[19] != '.') {
+    return false;
+  }
+  for (int i = 20; i < len - 1; i++) {
+    if (!is_digit(p[i])) {
+      return false;
+    }
+  }
+  return p[len - 2] != '0';
+}
+
+// An unordered transaction (Cosmos SDK 0.53 and later) is replay-protected by
+// its expiry instead of its sequence: the body sets unordered and
+// timeout_timestamp, and every signer signs at sequence zero. The chain's sign
+// document carries "unordered":true, omitting the key when false, and
+// "timeout_timestamp" whenever the body sets one, which an ordered transaction
+// may also do.
+//
+// Only documents the chain can build are accepted. It never writes
+// unordered:false, and it refuses an unordered transaction that has no expiry
+// or carries a sequence. The last would also put under a signature a sequence
+// that the review hides on the default chain.
+static parser_error_t validate_unordered(const parsed_json_t *json,
+                                         uint16_t sequence_token_index) {
+  uint16_t timeout_token_index = 0;
+  const bool has_timeout = object_get_value(json, 0, "timeout_timestamp",
+                                            &timeout_token_index) == parser_ok;
+  if (has_timeout) {
+    const jsmntok_t *token = &json->tokens[timeout_token_index];
+    if (token->type != JSMN_STRING || token->start < 0 ||
+        token->end < token->start || token->end > (int)json->bufferLen ||
+        !is_rfc3339_utc(json->buffer + token->start,
+                        token->end - token->start)) {
+      return parser_json_invalid_timeout_timestamp;
+    }
+  }
+
+  uint16_t unordered_token_index = 0;
+  if (object_get_value(json, 0, "unordered", &unordered_token_index) !=
+      parser_ok) {
+    return parser_ok;
+  }
+
+  // The JSON boolean, not the string "true": the chain writes a bool bare.
+  if (!token_is(json, unordered_token_index, JSMN_PRIMITIVE, "true")) {
+    return parser_json_unordered_not_true;
+  }
+  if (!has_timeout) {
+    return parser_json_unordered_missing_timeout;
+  }
+  if (!token_is(json, sequence_token_index, JSMN_STRING, "0")) {
+    return parser_json_unordered_with_sequence;
+  }
+
+  return parser_ok;
+}
+
 parser_error_t tx_validate(parsed_json_t *json) {
   if (json == NULL) {
     return parser_unexpected_value;
@@ -318,6 +430,7 @@ parser_error_t tx_validate(parsed_json_t *json) {
   err = object_get_value(json, 0, "sequence", &token_index);
   if (err != parser_ok)
     return parser_json_missing_sequence;
+  uint16_t sequence_token_index = token_index;
 
   err = object_get_value(json, 0, "fee", &token_index);
   if (err != parser_ok)
@@ -340,8 +453,9 @@ parser_error_t tx_validate(parsed_json_t *json) {
   // root or inside StdFee is rejected so future host-side fields cannot be
   // signed without the device knowing how to display them.
   static const char *const allowed_root_keys[] = {
-      "account_number", "chain_id", "fee", "memo",
-      "msgs",           "sequence", "tip", "timeout_height",
+      "account_number", "chain_id",          "fee", "memo",
+      "msgs",           "sequence",          "tip", "timeout_height",
+      "unordered",      "timeout_timestamp",
   };
   err = validate_allowed_keys(json, 0, allowed_root_keys,
                               sizeof(allowed_root_keys) /
@@ -363,5 +477,5 @@ parser_error_t tx_validate(parsed_json_t *json) {
     return err;
   }
 
-  return parser_ok;
+  return validate_unordered(json, sequence_token_index);
 }

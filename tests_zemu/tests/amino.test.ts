@@ -32,6 +32,7 @@ import {
   wasm_execute_contract_boundary_test,
   babylonWrappedDelegate,
   babylonWrappedUndelegate,
+  unordered_sign_bytes,
 } from './common'
 
 // @ts-ignore
@@ -647,6 +648,150 @@ describe('Amino', function () {
 
       const signatureOk = secp256k1.ecdsaVerify(signature, msgHash, pk)
       expect(signatureOk).toEqual(true)
+    } finally {
+      await sim.close()
+    }
+  })
+
+  // An unordered transaction is bounded by its expiry instead of a sequence.
+  // The review shows "Unordered" and "Timeout Timestamp" on every model in
+  // normal mode on the default chain, where chain ID, account and sequence are
+  // hidden: the expiry is the one limit on the signature, so it is never among
+  // the hidden fields.
+  test.concurrent.each(DEVICE_MODELS)('sign unordered', async function (m) {
+    const sim = new Zemu(m.path)
+    try {
+      await sim.start({ ...defaultOptions, model: m.name })
+      const app = new ArkApp(sim.getTransport())
+
+      const path = "m/44'/330'/0'/0/0"
+      const tx = Buffer.from(unordered_sign_bytes, 'utf-8')
+      const hrp = 'ark'
+
+      // get address / publickey
+      const respPk = await app.getAddressAndPubKey(path, hrp)
+      expect(respPk).toHaveProperty('compressed_pk')
+      expect(respPk).toHaveProperty('bech32_address')
+
+      // do not wait here..
+      const signatureRequest = app.sign(path, tx, hrp, AMINO_JSON_TX)
+
+      // Wait until we are not in the main menu
+      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
+      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-sign_unordered`)
+
+      const resp = await signatureRequest
+      expect(resp).toHaveProperty('signature')
+
+      // Now verify the signature
+      const hash = crypto.createHash('sha256')
+      const msgHash = Uint8Array.from(hash.update(tx).digest())
+
+      const signatureDER = resp.signature
+      const signature = secp256k1.signatureImport(Uint8Array.from(signatureDER))
+
+      const pk = Uint8Array.from(respPk.compressed_pk)
+
+      const signatureOk = secp256k1.ecdsaVerify(signature, msgHash, pk)
+      expect(signatureOk).toEqual(true)
+    } finally {
+      await sim.close()
+    }
+  })
+
+  // Expert mode adds chain ID, account, the sequence an unordered transaction
+  // is signed at (zero) and gas, and still ends on the two unordered fields.
+  test.concurrent.each(DEVICE_MODELS)('sign unordered expert', async function (m) {
+    const sim = new Zemu(m.path)
+    try {
+      await sim.start({ ...defaultOptions, model: m.name })
+      const app = new ArkApp(sim.getTransport())
+
+      // Activate expert mode
+      await sim.toggleExpertMode()
+
+      const path = "m/44'/330'/0'/0/0"
+      const tx = Buffer.from(unordered_sign_bytes, 'utf-8')
+      const hrp = 'ark'
+
+      // get address / publickey
+      const respPk = await app.getAddressAndPubKey(path, hrp)
+      expect(respPk).toHaveProperty('compressed_pk')
+      expect(respPk).toHaveProperty('bech32_address')
+
+      // do not wait here..
+      const signatureRequest = app.sign(path, tx, hrp, AMINO_JSON_TX)
+
+      // Wait until we are not in the main menu
+      await sim.waitUntilScreenIsNot(sim.getMainMenuSnapshot())
+      await sim.compareSnapshotsAndApprove('.', `${m.prefix.toLowerCase()}-sign_unordered_expert`)
+
+      const resp = await signatureRequest
+      expect(resp).toHaveProperty('signature')
+
+      // Now verify the signature
+      const hash = crypto.createHash('sha256')
+      const msgHash = Uint8Array.from(hash.update(tx).digest())
+
+      const signatureDER = resp.signature
+      const signature = secp256k1.signatureImport(Uint8Array.from(signatureDER))
+
+      const pk = Uint8Array.from(respPk.compressed_pk)
+
+      const signatureOk = secp256k1.ecdsaVerify(signature, msgHash, pk)
+      expect(signatureOk).toEqual(true)
+    } finally {
+      await sim.close()
+    }
+  })
+
+  // Documents the chain cannot build are refused before review: each differs
+  // from the accepted sign bytes in one member.
+  test.concurrent.each(DEVICE_MODELS)('sign refuses an inconsistent unordered document', async function (m) {
+    const sim = new Zemu(m.path)
+    try {
+      await sim.start({ ...defaultOptions, model: m.name })
+      const app = new ArkApp(sim.getTransport())
+
+      const path = "m/44'/330'/0'/0/0"
+      const hrp = 'ark'
+
+      // JSON.parse keeps the members in the order of the sign bytes, which is
+      // sorted, so each variant below is still canonical JSON.
+      const doc = JSON.parse(unordered_sign_bytes)
+      expect(JSON.stringify(doc)).toEqual(unordered_sign_bytes)
+
+      const { timeout_timestamp, ...withoutTimeout } = doc
+      expect(timeout_timestamp).toEqual('2026-11-25T12:10:00Z')
+
+      const refused = [
+        // The chain omits unordered when false and writes the boolean bare.
+        { doc: { ...doc, unordered: false }, error: 'JSON Unordered is not true' },
+        { doc: { ...doc, unordered: 'true' }, error: 'JSON Unordered is not true' },
+        // An unordered transaction with no expiry.
+        { doc: withoutTimeout, error: 'JSON Unordered without timeout_timestamp' },
+        // The chain refuses a sequence on an unordered transaction, and normal
+        // mode would not show it.
+        { doc: { ...doc, sequence: '7' }, error: 'JSON Unordered with a sequence' },
+        // The expiry is only ever the UTC form the chain writes.
+        { doc: { ...doc, timeout_timestamp: '2026-11-25T21:10:00+09:00' }, error: 'JSON Invalid timeout_timestamp' },
+        { doc: { ...doc, timeout_timestamp: '1795608600' }, error: 'JSON Invalid timeout_timestamp' },
+      ]
+
+      // The device answers 0x6984 with the parser's message as the payload, and
+      // the client appends that payload to its own text for the status word.
+      for (const r of refused) {
+        const tx = Buffer.from(JSON.stringify(r.doc), 'utf-8')
+        await expect(app.sign(path, tx, hrp, AMINO_JSON_TX)).rejects.toMatchObject({
+          returnCode: 0x6984,
+          errorMessage: `Data is invalid : ${r.error}`,
+        })
+      }
+
+      // Every refusal leaves the device idle on the main menu, with nothing
+      // waiting for approval.
+      const resp = await app.getAddressAndPubKey(path, hrp)
+      expect(resp.bech32_address.startsWith('ark1')).toBe(true)
     } finally {
       await sim.close()
     }

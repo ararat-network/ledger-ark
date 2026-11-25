@@ -71,6 +71,10 @@ typedef enum {
   parser_json_missing_account_number,
   parser_json_missing_memo,
   parser_json_unexpected_error,
+  parser_json_unordered_not_true,
+  parser_json_unordered_missing_timeout,
+  parser_json_unordered_with_sequence,
+  parser_json_invalid_timeout_timestamp,
   // cbor
   parser_cbor_unexpected,
   parser_cbor_unexpected_EOF,
