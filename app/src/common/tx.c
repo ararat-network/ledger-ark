@@ -106,14 +106,17 @@ zxerr_t tx_getNumItems(uint8_t *num_items) {
   return zxerr_ok;
 }
 
-zxerr_t tx_getItem(int8_t displayIdx, char *outKey, uint16_t outKeyLen,
+zxerr_t tx_getItem(uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
                    char *outVal, uint16_t outValLen, uint8_t pageIdx,
                    uint8_t *pageCount) {
   uint8_t numItems = 0;
 
   CHECK_ZXERR(tx_getNumItems(&numItems))
 
-  if (displayIdx < 0 || displayIdx > numItems) {
+  // The view asks for a review's intro text at VIEW_INTRO_DISPLAY_IDX (0xFF).
+  // This app has none, and that index is past any item count the parser
+  // accepts, so it is answered here like every other index out of range.
+  if (displayIdx > numItems) {
     return zxerr_no_data;
   }
 

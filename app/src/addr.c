@@ -39,7 +39,7 @@ zxerr_t addr_getNumItems(uint8_t *num_items) {
   return zxerr_ok;
 }
 
-zxerr_t addr_getItem(int8_t displayIdx, char *outKey, uint16_t outKeyLen,
+zxerr_t addr_getItem(uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
                      char *outVal, uint16_t outValLen, uint8_t pageIdx,
                      uint8_t *pageCount) {
   if (pageCount == NULL || outKey == NULL || outVal == NULL) {
