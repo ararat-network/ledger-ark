@@ -79,6 +79,14 @@ const char *parser_getErrorDescription(parser_error_t err) {
     return "JSON Missing memo";
   case parser_json_unexpected_error:
     return "JSON Unexpected error";
+  case parser_json_unordered_not_true:
+    return "JSON Unordered is not true";
+  case parser_json_unordered_missing_timeout:
+    return "JSON Unordered without timeout_timestamp";
+  case parser_json_unordered_with_sequence:
+    return "JSON Unordered with a sequence";
+  case parser_json_invalid_timeout_timestamp:
+    return "JSON Invalid timeout_timestamp";
   // cbor
   case parser_cbor_unexpected:
     return "unexpected CBOR error";

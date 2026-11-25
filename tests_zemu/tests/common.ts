@@ -529,3 +529,13 @@ export const babylonWrappedUndelegate = {
   ],
   sequence: '1',
 }
+
+// The amino sign bytes of an unordered transaction (Cosmos SDK 0.53 and
+// later): a MsgSend on the default chain that expires at its
+// timeout_timestamp in place of being ordered by a sequence, and is signed at
+// sequence zero. These are the bytes themselves, not an object to stringify:
+// ark-sdk's makeAminoSignDoc and aminoSignDocBytes built them, and the chain's
+// x/tx aminojson handler (Cosmos SDK v0.54.5) returns the same bytes from
+// GetSignBytes for this transaction.
+export const unordered_sign_bytes =
+  '{"account_number":"42","chain_id":"ark-1","fee":{"amount":[{"amount":"2000000000000000","denom":"anoah"}],"gas":"200000"},"memo":"","msgs":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1500000000000000000","denom":"anoah"}],"from_address":"ark102p6s52n97e7zcmxc49ufwx04lntre5ktqkkzp","to_address":"ark1lw7jrngdgm88ruz8v7k6s70gssu6vryufel8nq"}}],"sequence":"0","timeout_timestamp":"2026-11-25T12:10:00Z","unordered":true}'

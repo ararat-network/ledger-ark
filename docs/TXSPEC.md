@@ -22,6 +22,9 @@ Transactions passed to the Ledger device will be in the following format. The Le
 
 `msgs` is a list of messages, which are arbitrary JSON structures.
 
+The document may also carry `tip`, `timeout_height`, `timeout_timestamp` and `unordered`, as the chain writes them. Any
+other member at the root is refused: the device does not sign a field it cannot display.
+
 #### Examples
 
 ```json
@@ -44,7 +47,7 @@ Note, all the `{number}` values must be passed as string.
 
 The Ledger device SHOULD pick a suitable display representation for the transaction.
 
-The app displays `chain_id`, `account_number`, `sequence`, `msgs`, `memo`, `fee` and, when present, `tip` and `timeout_height` in that order, each on their own page, paginating if necessary. On the default chain (`ark-1`), `chain_id`, `account_number` and `sequence` are hidden unless expert mode is on.
+The app displays `chain_id`, `account_number`, `sequence`, `msgs`, `memo`, `fee` and, when present, `tip`, `timeout_height`, `unordered` and `timeout_timestamp` in that order, each on their own page, paginating if necessary. On the default chain (`ark-1`), `chain_id`, `account_number` and `sequence` are hidden unless expert mode is on. `unordered` and `timeout_timestamp` are shown whenever they are present, in and out of expert mode and on every chain.
 
 `msgs` should be iterated through and each displayed according to the following recursive logic:
 
@@ -67,6 +70,53 @@ display (json, level)
 ```
 
 starting at level 0, e.g. `display(msgs[0], 0)`.
+
+#### Unordered transactions
+
+An unordered transaction (Cosmos SDK 0.53 and later) is not ordered by its signer's sequence. Its body sets `unordered`
+and a `timeout_timestamp`, the chain accepts it once and only until that time, and it is signed at sequence zero. The
+sign document carries both members after `sequence`, from app version 2.3.0:
+
+```json
+{
+  "account_number": "42",
+  "chain_id": "ark-1",
+  "fee": {
+    "amount": [{"amount": "2000000000000000", "denom": "anoah"}],
+    "gas": "200000"
+  },
+  "memo": "",
+  "msgs": [{arbitrary}],
+  "sequence": "0",
+  "timeout_timestamp": "2026-11-25T12:10:00Z",
+  "unordered": true
+}
+```
+
+- `unordered` is the JSON boolean `true`, written bare. The chain omits the member when it is false.
+- `timeout_timestamp` is a string: the time in UTC as RFC 3339 writes it, `YYYY-MM-DDTHH:MM:SSZ`, with a fraction of one
+  to nine digits and no trailing zero before the `Z` when the time has nanoseconds (`2026-11-25T12:10:00.5Z`). An
+  ordered transaction may set one too, without `unordered`.
+
+The review ends on two pages for them, with the values as they are signed:
+
+| Page                | Value                  |
+| ------------------- | ---------------------- |
+| `Unordered`         | `true`                 |
+| `Timeout Timestamp` | `2026-11-25T12:10:00Z` |
+
+The device shows the time in UTC and does not convert it. It has no clock, so it cannot tell whether the time has
+passed or how far off it is: the host sets it, and the signer reads it.
+
+The device accepts only the documents the chain can build, and refuses the rest before review with `0x6984` and one of
+these messages:
+
+| Document                                                                 | Message                                    |
+| ------------------------------------------------------------------------ | ------------------------------------------ |
+| `unordered` with any value but the boolean `true`, `false` included      | `JSON Unordered is not true`               |
+| `unordered` without `timeout_timestamp`                                  | `JSON Unordered without timeout_timestamp` |
+| `unordered` with a `sequence` other than the string `"0"`                | `JSON Unordered with a sequence`           |
+| `timeout_timestamp` in any other form, with or without `unordered`       | `JSON Invalid timeout_timestamp`           |
 
 ### Validation
 
