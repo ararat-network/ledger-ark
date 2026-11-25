@@ -52,6 +52,8 @@ The device reports its firmware version from the dashboard without installing an
    | Flex    | `installer_flex.sh`       |
    | Apex P  | `installer_apex_p.sh`     |
 
+   The release's `ark_zemu_*.elf` files are for the emulator, not for a device: leave them.
+
 2. Check the download. The checksum catches a corrupted or substituted file; authenticity rests on the release page
    itself, under the `ararat-network` organisation, since a release's assets cannot change once it is published.
 
@@ -108,8 +110,8 @@ the flow against a local chain.
 ## What a release carries
 
 [release.yml](../.github/workflows/release.yml) runs on a `v*` tag that matches [app/Makefile.version](../app/Makefile.version),
-builds one installer per sideloadable device, writes `SHA256SUMS` over them, and publishes an immutable release whose
-notes carry the firmware table.
+builds one installer per sideloadable device and one emulator binary per emulated device, writes `SHA256SUMS` over
+every file, and publishes an immutable release whose notes carry the firmware table and the list of emulator binaries.
 
 - **It is a production build.** `PRODUCTION_BUILD=1`, the app Makefile's default, draws the Ark home screen;
   `PRODUCTION_BUILD=0`, for a local demo build, draws DO NOT USE over it. The device's own unverified-app warning stays
@@ -121,9 +123,18 @@ notes carry the firmware table.
   [api_levels.json](../api_levels.json), a copy of the table in
   [ledger-secure-sdk](https://github.com/LedgerHQ/ledger-secure-sdk/blob/master/api_levels.json). A level with no
   production firmware for its device in the copy fails the release rather than publishing without the line; the fix is
-  to refresh the copy. A firmware release from Ledger is a reason to move `SDK_TAG` and cut a new tag. The emulator
-  suite runs the app at the Zondax builder image's own level, so the hardware pass on the released installers is what
-  covers the level members run.
+  to refresh the copy. A firmware release from Ledger is a reason to move `SDK_TAG` and cut a new tag.
+- **Its emulator binaries are not installers.** `ark_zemu_<model>_v<version>.elf` is the app as
+  [Zemu](https://github.com/Zondax/zemu) loads it, one file for each device the emulator suite runs on, the Nano X
+  included: for testing software that talks to the app, and never what a member loads on a device. Releases after
+  v2.3.0 carry them. The release builds them as CI builds the app for the suite, in the Zondax builder image that
+  ledger-zxlib's `dockerized_build.mk` names, runs the suite on them, and
+  [collects](../.github/scripts/collect_emulator_binaries.sh) them only once it has passed; the release fails
+  otherwise. The notes give the SDK version and API level each file records.
+  [Testing against a released app](../README.md#testing-against-a-released-app) is the guide to using them.
+- **The two builds are different bytes.** The installers come from Ledger's image at `SDK_TAG`, the emulator binaries
+  from the Zondax image at the SDK it ships: one source, two builds, so the emulator suite does not run on the bytes
+  inside the installers. The hardware pass on the released installers is what covers the build members run.
 
 Before a release goes to members, the hardware pass in [DEVICE_TESTING.md](DEVICE_TESTING.md) runs on the devices the
 release targets from the released installers, not from a local build.

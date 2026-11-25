@@ -26,7 +26,8 @@ Until Ledger lists the app in Ledger Live, it is sideloaded: download the instal
 from a [release](https://github.com/ararat-network/ledger-ark/releases), check it, and load it with `ledgerblue`.
 [docs/SIDELOAD.md](docs/SIDELOAD.md) is the guide, with the firmware rule, the device list (the Nano X cannot
 sideload), and what a release carries. A release is a production build; the device still warns that the app is
-unsigned until Ledger lists it.
+unsigned until Ledger lists it. The `ark_zemu_*.elf` files in a release are not installers: they are the app for the
+emulator, described under [Testing against a released app](#testing-against-a-released-app).
 
 # Development
 
@@ -107,6 +108,37 @@ make zemu_test
 ```bash
 cd tests_zemu && corepack pnpm exec jest -t 'get address'
 ```
+
+## Testing against a released app
+
+Software that talks to the app, the Ark app's Ledger adapter for one, can test against a released app in Zemu
+without building it. Each release after v2.3.0 carries the ELF Zemu loads for every device the suite here runs on,
+named `ark_zemu_<model>_v<version>.elf`, where `<model>` is the name Zemu takes for the device:
+
+| Device  | Zemu model | Binary                              |
+| ------- | ---------- | ----------------------------------- |
+| Nano X  | `nanox`    | `ark_zemu_nanox_v<version>.elf`     |
+| Nano S+ | `nanosp`   | `ark_zemu_nanosp_v<version>.elf`    |
+| Stax    | `stax`     | `ark_zemu_stax_v<version>.elf`      |
+| Flex    | `flex`     | `ark_zemu_flex_v<version>.elf`      |
+| Apex P  | `apex_p`   | `ark_zemu_apex_p_v<version>.elf`    |
+
+These are the files the release's own run of the Zemu suite passed on, built as `make` builds them here. They are
+not installers, they cannot be loaded on a device, and they are not the bytes inside the installers, which a
+separate build produces ([docs/SIDELOAD.md](docs/SIDELOAD.md#what-a-release-carries)).
+
+Pin two things in the repository that consumes them: the release tag, and the SHA-256 of each file it uses, copied
+from the release's `SHA256SUMS`. Check the pinned hash on every download. A release's assets cannot change once it is
+published, so the tag names one set of bytes; the hash is what makes the test fail closed if anything else arrives.
+
+```bash
+gh release download v<version> --repo ararat-network/ledger-ark --pattern 'ark_zemu_*.elf' --pattern SHA256SUMS
+sha256sum --check --ignore-missing SHA256SUMS
+```
+
+Give Zemu the file as the model's `path`, with the model name from the table and the seed and start options the
+tests need. The suite here runs them under the Zemu version in [tests_zemu/pnpm-lock.yaml](tests_zemu/pnpm-lock.yaml);
+an older Zemu may not emulate the API level the release notes give for a file.
 
 ## Using a real device
 
