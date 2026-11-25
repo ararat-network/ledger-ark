@@ -38,7 +38,7 @@ zxerr_t secret_getNumItems(uint8_t *num_items) {
   return zxerr_no_data;
 }
 
-zxerr_t secret_getItem(int8_t displayIdx, char *outKey, uint16_t outKeyLen,
+zxerr_t secret_getItem(uint8_t displayIdx, char *outKey, uint16_t outKeyLen,
                        char *outVal, uint16_t outValLen, uint8_t pageIdx,
                        uint8_t *pageCount) {
   UNUSED(displayIdx);
