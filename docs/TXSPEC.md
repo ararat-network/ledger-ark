@@ -118,6 +118,58 @@ these messages:
 | `unordered` with a `sequence` other than the string `"0"`                | `JSON Unordered with a sequence`           |
 | `timeout_timestamp` in any other form, with or without `unordered`       | `JSON Invalid timeout_timestamp`           |
 
+#### Signup documents
+
+A member whose account is on a Ledger signs up, and vouches for another admission, by signing an ADR-036 document: an
+amino sign document that can never be a transaction, whose one message carries the signed data. The Ark app's signup
+protocol specifies it (`signer/docs/SIGNUP_PROTOCOL.md` in `ark-app`, section 5):
+
+```json
+{
+  "account_number": "0",
+  "chain_id": "",
+  "fee": {"amount": [], "gas": "0"},
+  "memo": "",
+  "msgs": [{"type": "sign/MsgSignData", "value": {"data": "{base64}", "signer": "{address}"}}],
+  "sequence": "0"
+}
+```
+
+The app has no special handling for it. It passes [validation](#validation) like any sign document and is shown by the
+display logic above. An empty `chain_id` is not the default chain, so nothing is hidden: the review is the same in and
+out of expert mode, on every device.
+
+| Page                | Value                                                    |
+| ------------------- | -------------------------------------------------------- |
+| `Chain ID`          | blank                                                    |
+| `Account`           | `0`                                                      |
+| `Sequence`          | `0`                                                      |
+| `Type`              | `sign/MsgSignData`                                       |
+| `msgs/value/data`   | the base64 text as signed, in full, over several screens |
+| `msgs/value/signer` | the address                                              |
+| `Fee`               | `Empty`                                                  |
+| `Gas`               | `0`                                                      |
+
+The empty `memo` has no page. For a signup or vouch document, 308 base64 characters in a 510-byte sign document, `data`
+takes two screens on Stax and Flex, three on Apex P and six on Nano S+ and Nano X. On the Nano models the label is
+shortened to fit beside the screen count: to `msgs/valu...data (4/6)` on some screens of Nano S+, and on Nano X to
+`msgs/valu...[1/2] (1/5)` on the first five screens and `msgs/valu...data [2/2]` on the last.
+
+What the signer should know:
+
+- `data` is shown as base64 and is not decoded. The document's domain, origin, chain and expiry cannot be read on the
+  device, and a signup challenge and a vouch differ only inside that text. The host that builds the document is where
+  it is read; the device shows that the bytes signed are the ones the host sent.
+- The review is titled as a transaction and ends on "Sign transaction?". Nothing on the device says this document
+  cannot be one; the blank chain ID, the zero sequence and gas and the empty fee are what make it so.
+- The device does not compare `signer` with its own address. It signs a document naming any address, and the address on
+  the `msgs/value/signer` page is the one to check. A verifier refuses a document whose signer is not the address of
+  the key that signed.
+
+The signature is the same as for a transaction: ECDSA over the SHA-256 of the sign bytes, returned in DER.
+`tests_zemu/tests/signdata.test.ts` pins these screens and verifies the signature for two of the protocol's test
+vectors.
+
 ### Validation
 
 The Ledger device MUST validate that supplied JSON is valid. Our JSON specification is a subset of [RFC 7159](https://tools.ietf.org/html/rfc7159) - invalid RFC 7159 JSON is invalid Ledger JSON, but not all valid RFC 7159 JSON is valid Ledger JSON.

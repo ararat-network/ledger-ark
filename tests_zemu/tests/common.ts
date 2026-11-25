@@ -539,3 +539,19 @@ export const babylonWrappedUndelegate = {
 // GetSignBytes for this transaction.
 export const unordered_sign_bytes =
   '{"account_number":"42","chain_id":"ark-1","fee":{"amount":[{"amount":"2000000000000000","denom":"anoah"}],"gas":"200000"},"memo":"","msgs":[{"type":"cosmos-sdk/MsgSend","value":{"amount":[{"amount":"1500000000000000000","denom":"anoah"}],"from_address":"ark102p6s52n97e7zcmxc49ufwx04lntre5ktqkkzp","to_address":"ark1lw7jrngdgm88ruz8v7k6s70gssu6vryufel8nq"}}],"sequence":"0","timeout_timestamp":"2026-11-25T12:10:00Z","unordered":true}'
+
+// ADR-036 sign documents from the Ark member signup protocol: the exact
+// sign_bytes of two vectors in ark-app's signer/testdata/signup/vectors.json
+// whose expect is "ok". Each is an amino sign document that can never be a
+// transaction (empty chain_id, account number, sequence and gas all zero, no
+// fee) whose one message, sign/MsgSignData, carries the signup document as
+// base64 in "data" and the member's address in "signer". These are the bytes
+// themselves, not objects to stringify.
+//
+// challenge_ok: a member's proof of possession, domain ark-signup/v1.
+export const signup_challenge_sign_bytes =
+  '{"account_number":"0","chain_id":"","fee":{"amount":[],"gas":"0"},"memo":"","msgs":[{"type":"sign/MsgSignData","value":{"data":"eyJhZG1pc3Npb24iOiJhZG1fMDAwMSIsImNoYWluX2lkIjoiYXJrLTEiLCJkb21haW4iOiJhcmstc2lnbnVwL3YxIiwiZXhwaXJlcyI6IjE3NjE0MDA2MDAiLCJpc3N1ZWQiOiIxNzYxNDAwMDAwIiwibm9uY2UiOiIyMDFkN2EwMTFiNGJkZjA2NjIzNjk2N2ViMjRiNGQ3YTQ3OGFhYjI0ZTQ5OTNlYTJhMTY5ZjQyMmY3ZDgyY2UyIiwib3JpZ2luIjoiaHR0cHM6Ly9tZW1iZXJzLmFyYXJhdC5uZXR3b3JrIn0=","signer":"ark10s999mwwwxzwd0hqg0s8xp67jxwhpu09g74u3s"}}],"sequence":"0"}'
+
+// vouch_ok: a member's vouch for an admission, domain ark-vouch/v1.
+export const signup_vouch_sign_bytes =
+  '{"account_number":"0","chain_id":"","fee":{"amount":[],"gas":"0"},"memo":"","msgs":[{"type":"sign/MsgSignData","value":{"data":"eyJhZG1pc3Npb24iOiJhZG1fMDAwMSIsImNoYWluX2lkIjoiYXJrLTEiLCJkb21haW4iOiJhcmstdm91Y2gvdjEiLCJleHBpcmVzIjoiMTc2MTQ4NjQwMCIsImlzc3VlZCI6IjE3NjE0MDAwMDAiLCJub25jZSI6IjdkMTQ0ZTc0NDU5NzUyMjVjYTRlNDQ0NjdmNGI3NDY2MmIwNjQ5ODdlMTA1YmI2MTc2NjVlNzVmZjQyYzAxYjUiLCJvcmlnaW4iOiJodHRwczovL21lbWJlcnMuYXJhcmF0Lm5ldHdvcmsifQ==","signer":"ark1utjttjhm8eks87tacmu6dh0hgzdysnh5kpleyj"}}],"sequence":"0"}'
