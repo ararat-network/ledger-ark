@@ -66,6 +66,8 @@ locked dashboard.
       under settings, the version from `app/Makefile.version`. It must be 2.1.0 or
       later: the Cosmos ledger library behind every Go client, `arkd` included, refuses
       an older app before deriving anything.
+- [ ] For the unordered review below it must be 2.3.0 or later, the first version that
+      signs an unordered transaction's sign document.
 
 ### Probe the derivation domains
 
@@ -116,6 +118,64 @@ elbow sun young`) the 330' account 0 address is
 `ark1uayrf8zh44620zyjd052gdcjcrvjpgkk7qjclx`. With a personal seed there are no
 published vectors; the check is instead that stage 2's `arkd keys add --ledger` — a
 completely separate client stack — reports the same address this probe printed.
+
+### Review an unordered transaction
+
+An unordered transaction is bounded by an expiry instead of a sequence. Its amino sign
+document carries `"unordered":true` and a `timeout_timestamp`, and the device shows both
+on every review ([TXSPEC.md](TXSPEC.md)). This probe signs the document the emulator
+suite pins, `unordered_sign_bytes` in `tests_zemu/tests/common.ts`: sign bytes as the
+chain builds them, a 1.5 NOAH send with a fixed expiry that has long passed. The device
+has no clock and shows the time as written; nothing is broadcast.
+
+```bash
+cd tests_zemu && corepack pnpm exec ts-node -e '
+import crypto from "crypto";
+import TransportNodeHid from "@ledgerhq/hw-transport-node-hid";
+import ArkApp from "@zondax/ledger-cosmos-js";
+// @ts-ignore
+import secp256k1 from "secp256k1/elliptic";
+import { unordered_sign_bytes } from "./tests/common";
+
+async function main() {
+  const app = new ArkApp(await TransportNodeHid.create());
+  const path = "m/44'\''/330'\''/0'\''/0/0";
+  const pk = await app.getAddressAndPubKey(path, "ark");
+
+  // Read the review on the device, then approve.
+  const tx = Buffer.from(unordered_sign_bytes, "utf-8");
+  const resp = await app.sign(path, tx, "ark", 0);
+  const hash = Uint8Array.from(crypto.createHash("sha256").update(tx).digest());
+  const sig = secp256k1.signatureImport(Uint8Array.from(resp.signature));
+  console.log("signature verifies:", secp256k1.ecdsaVerify(sig, hash, Uint8Array.from(pk.compressed_pk)));
+
+  // Documents the chain cannot build. None reaches review.
+  const doc = JSON.parse(unordered_sign_bytes);
+  const noTimeout = { ...doc };
+  delete noTimeout.timeout_timestamp;
+  for (const [name, bad, want] of [
+    ["unordered false", { ...doc, unordered: false }, "JSON Unordered is not true"],
+    ["no timeout_timestamp", noTimeout, "JSON Unordered without timeout_timestamp"],
+    ["sequence 7", { ...doc, sequence: "7" }, "JSON Unordered with a sequence"],
+    ["zone offset", { ...doc, timeout_timestamp: "2026-11-25T21:10:00+09:00" }, "JSON Invalid timeout_timestamp"],
+  ] as const) {
+    try { await app.sign(path, Buffer.from(JSON.stringify(bad), "utf-8"), "ark", 0); console.log("NOT REFUSED:", name); }
+    catch (e: any) { console.log(name, "refused:", e.returnCode === 0x6984 && String(e.errorMessage).includes(want) ? "ok" : `${e.returnCode} ${e.errorMessage}`); }
+  }
+}
+main().then(() => process.exit(0));
+'
+```
+
+- [ ] The review shows Type `Send`, Amount `1.500000 NOAH`, From, To and Fee
+      `0.002000 NOAH`, and ends on two pages: **Unordered** `true` and **Timeout
+      Timestamp** `2026-11-25T12:10:00Z`. No chain-id, account or sequence screen
+      (default chain, non-expert).
+- [ ] After approval the probe prints `signature verifies: true`.
+- [ ] The four inconsistent documents are each refused with `0x6984` and their own
+      message, and the device stays on the app's home screen throughout.
+- [ ] With expert mode enabled, the same review adds Chain ID `ark-1`, Account `42`,
+      Sequence `0` and Gas `200000`, and still ends on the two pages above.
 
 ## Stage 2 — End to end against a local ark chain
 
@@ -192,6 +252,9 @@ errors say "Cosmos app" because `arkd` does not set the app name.
       non-expert), the amount and fee as `NOAH` figures at 18 decimals, and `ark1...`
       addresses.
 - [ ] Approving broadcasts successfully; `build/arkd q tx <hash>` shows code 0.
+- [ ] The same send with `--unordered --timeout-duration 5m` added reviews like the
+      first, plus the **Unordered** and **Timeout Timestamp** pages, the time in UTC
+      about five minutes ahead, and lands. The ordered send above shows neither page.
 - [ ] A delegation of at least 1 NOAH (`tx staking delegate <valoper> 1000000000000000000anoah`)
       signs and lands the same way. It comes first: voting needs that much staked.
 - [ ] A gov vote (`tx gov vote 1 yes`) signs and lands. Put the proposal up from `node0`
