@@ -42,27 +42,6 @@ import crypto from 'crypto'
 
 jest.setTimeout(120000)
 
-// What the device answers when it refuses a sign document before review: the
-// status word and the parser's message. The JS client keeps only the status
-// word, and Zemu's transport raises on any word but 0x9000 with the text the
-// device sent as the error's message, so the chunks go through the transport
-// directly to read both.
-async function signRefusal(app: any, transport: any, path: string, tx: Buffer, hrp: string) {
-  const chunks: Buffer[] = await app.prepareChunks_hrp(path, tx, hrp)
-  try {
-    for (let i = 0; i < chunks.length; i += 1) {
-      const p1 = i === 0 ? 0 : i === chunks.length - 1 ? 2 : 1
-      await transport.send(0x55, 0x02, p1, AMINO_JSON_TX, chunks[i], [0x9000, 0x6984])
-    }
-  } catch (e: any) {
-    if (typeof e?.statusCode === 'number') {
-      return { returnCode: e.statusCode, message: e.message }
-    }
-    throw e
-  }
-  throw new Error('the device did not refuse the document')
-}
-
 describe('Amino', function () {
   // eslint-disable-next-line jest/expect-expect
   test.concurrent.each(DEVICE_MODELS)('can start and stop container', async function (m) {
@@ -799,14 +778,14 @@ describe('Amino', function () {
         { doc: { ...doc, timeout_timestamp: '1795608600' }, error: 'JSON Invalid timeout_timestamp' },
       ]
 
+      // The device answers 0x6984 with the parser's message as the payload, and
+      // the client appends that payload to its own text for the status word.
       for (const r of refused) {
         const tx = Buffer.from(JSON.stringify(r.doc), 'utf-8')
-        expect(await signRefusal(app, sim.getTransport(), path, tx, hrp)).toEqual({
+        await expect(app.sign(path, tx, hrp, AMINO_JSON_TX)).rejects.toMatchObject({
           returnCode: 0x6984,
-          message: r.error,
+          errorMessage: `Data is invalid : ${r.error}`,
         })
-        // Through the client, as an app would see it.
-        await expect(app.sign(path, tx, hrp, AMINO_JSON_TX)).rejects.toMatchObject({ returnCode: 0x6984 })
       }
 
       // Every refusal leaves the device idle on the main menu, with nothing
